@@ -9,6 +9,6 @@
 import Foundation
 import UIKit
 
-protocol ViewController {
+protocol Controller {
     init(view: View)
 }

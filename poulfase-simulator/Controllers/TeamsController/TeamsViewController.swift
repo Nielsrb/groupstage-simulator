@@ -9,11 +9,16 @@
 import Foundation
 import UIKit
 
-final class TeamsViewController: UIViewController, ViewController {
+final class TeamsViewController: UIViewController, Controller {
+    
+    var dataObject = TeamObject()
+    
     init(view: View) {
         super.init(nibName: nil, bundle: nil)
         
-        print("Init")
+        dataObject.generateTeamModel()
+        
+        print(dataObject.model)
     }
     
     required init?(coder aDecoder: NSCoder) {

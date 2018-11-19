@@ -13,7 +13,7 @@
 		4662018821A303300041FE63 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4662018721A303300041FE63 /* Assets.xcassets */; };
 		4662018B21A303300041FE63 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4662018921A303300041FE63 /* LaunchScreen.storyboard */; };
 		4662019621A30D590041FE63 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019521A30D590041FE63 /* View.swift */; };
-		4662019821A30E6B0041FE63 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019721A30E6B0041FE63 /* ViewController.swift */; };
+		4662019821A30E6B0041FE63 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019721A30E6B0041FE63 /* Controller.swift */; };
 		4662019B21A30ECA0041FE63 /* TeamsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019A21A30ECA0041FE63 /* TeamsViewController.swift */; };
 		4662019D21A3100A0041FE63 /* TeamModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019C21A3100A0041FE63 /* TeamModel.swift */; };
 		466201A021A310B70041FE63 /* TeamsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019F21A310B70041FE63 /* TeamsView.swift */; };
@@ -28,7 +28,7 @@
 		4662018A21A303300041FE63 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4662018C21A303300041FE63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4662019521A30D590041FE63 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
-		4662019721A30E6B0041FE63 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		4662019721A30E6B0041FE63 /* Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
 		4662019A21A30ECA0041FE63 /* TeamsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsViewController.swift; sourceTree = "<group>"; };
 		4662019C21A3100A0041FE63 /* TeamModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamModel.swift; sourceTree = "<group>"; };
 		4662019F21A310B70041FE63 /* TeamsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsView.swift; sourceTree = "<group>"; };
@@ -67,7 +67,7 @@
 				4662018021A3032F0041FE63 /* AppDelegate.swift */,
 				4662018221A3032F0041FE63 /* RootViewController.swift */,
 				4662019221A30CF30041FE63 /* Models */,
-				4662019321A30D000041FE63 /* ViewControllers */,
+				4662019321A30D000041FE63 /* Controllers */,
 				4662019421A30D0C0041FE63 /* Views */,
 				4662018421A3032F0041FE63 /* Main.storyboard */,
 				4662018721A303300041FE63 /* Assets.xcassets */,
@@ -85,13 +85,13 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		4662019321A30D000041FE63 /* ViewControllers */ = {
+		4662019321A30D000041FE63 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				4662019721A30E6B0041FE63 /* ViewController.swift */,
-				4662019921A30EA70041FE63 /* TeamsViewController */,
+				4662019721A30E6B0041FE63 /* Controller.swift */,
+				4662019921A30EA70041FE63 /* TeamsController */,
 			);
-			path = ViewControllers;
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 		4662019421A30D0C0041FE63 /* Views */ = {
@@ -103,12 +103,12 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		4662019921A30EA70041FE63 /* TeamsViewController */ = {
+		4662019921A30EA70041FE63 /* TeamsController */ = {
 			isa = PBXGroup;
 			children = (
 				4662019A21A30ECA0041FE63 /* TeamsViewController.swift */,
 			);
-			path = TeamsViewController;
+			path = TeamsController;
 			sourceTree = "<group>";
 		};
 		4662019E21A310A10041FE63 /* TeamsView */ = {
@@ -193,7 +193,7 @@
 				4662018321A3032F0041FE63 /* RootViewController.swift in Sources */,
 				4662018121A3032F0041FE63 /* AppDelegate.swift in Sources */,
 				4662019D21A3100A0041FE63 /* TeamModel.swift in Sources */,
-				4662019821A30E6B0041FE63 /* ViewController.swift in Sources */,
+				4662019821A30E6B0041FE63 /* Controller.swift in Sources */,
 				4662019B21A30ECA0041FE63 /* TeamsViewController.swift in Sources */,
 				466201A021A310B70041FE63 /* TeamsView.swift in Sources */,
 				4662019621A30D590041FE63 /* View.swift in Sources */,
