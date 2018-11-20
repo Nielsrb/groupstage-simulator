@@ -16,7 +16,7 @@ final class TeamsViewController: UIViewController, Controller {
     
     let tableView = UITableView()
     
-    let cellHeight: CGFloat = 40
+    let cellHeight: CGFloat = 50
     
     init(view: View) {
         super.init(nibName: nil, bundle: nil)
@@ -54,7 +54,7 @@ extension TeamsViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: cellHeight))
-        view.backgroundColor = .lightGray
+        view.backgroundColor = UIColor.init(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
         
         let team = model.teams[section]
         
@@ -67,6 +67,15 @@ extension TeamsViewController: UITableViewDelegate, UITableViewDataSource {
         line.backgroundColor = .gray
         view.addSubview(line)*/
         
+        return view
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 50
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50))
         return view
     }
     
@@ -95,6 +104,7 @@ extension TeamsViewController: UITableViewDelegate, UITableViewDataSource {
         let player = model.teams[indexPath.section].players[indexPath.row]
         
         cell?.nameLabel.text = "\(player.lastName), \(player.firstName)"
+        cell?.powerLabel.text = "\(player.power)"
         
         return cell!
     }
@@ -108,12 +118,21 @@ private class PlayerCell: UITableViewCell {
     static let identifier = "PLAYER"
     
     let nameLabel = UILabel()
+    let powerLabel = UILabel()
     
     init() {
         super.init(style: .default, reuseIdentifier: PlayerCell.identifier)
         
         nameLabel.textColor = .black
         addSubview(nameLabel)
+        
+        powerLabel.textColor = .black
+        powerLabel.textAlignment = .center
+        powerLabel.font = UIFont.systemFont(ofSize: 20)
+        //powerLabel.backgroundColor = .green
+        powerLabel.layer.cornerRadius = 4
+        powerLabel.clipsToBounds = true
+        addSubview(powerLabel)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -124,5 +143,17 @@ private class PlayerCell: UITableViewCell {
         super.layoutSubviews()
         
         nameLabel.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
+        
+        powerLabel.sizeToFit()
+        powerLabel.frame = CGRect(x: frame.size.width - 50, y: (frame.size.height - 40) / 2, width: 40, height: 40)
+        powerLabel.backgroundColor = Int(powerLabel.text ?? "") ?? 50 >= 100 ? .yellow : .green
+    }
+    
+    private func getColorForPower(power: Int) -> UIColor {
+        if power >= 100 {
+            return .yellow
+        } else {
+            return .green
+        }
     }
 }
