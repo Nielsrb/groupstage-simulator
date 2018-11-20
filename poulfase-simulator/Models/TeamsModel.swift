@@ -16,8 +16,6 @@ final class TeamsModel: NSObject {
     private let playerFirstNames = ["Robert", "Bill", "Evan", "Richard", "Pepper", "Mauro", "Lucas", "Niels"]
     private let playerLastNames = ["Wood", "Shizuke", "Mulder", "Ndidi", "Lee", "San Giorgi", "van der Sloot"]
     
-    private var chosenPlayerNames: [String] = []
-    
     var teams: [TeamModel] = []
     
     // Public funtion to generate 4 random teams, can only be called once
