@@ -10,10 +10,10 @@ import Foundation
 
 final class TeamsModel: NSObject {
     private let teamFirstNames = ["Real", "SC", "FC", "Atletico"]
-    private let teamLastNames = ["Cambuur", "Madrid", "Hotspur", "Zoetermeer"]
+    private let teamLastNames = ["Cambuur", "Madrid", "Hotspur", "Zoetermeer", "Barcelona", "London", "Amsterdam", "Kaapstad"]
     
-    private let playerFirstNames = ["Robert", "Bill", "Evan", "Richard"]
-    private let playerLastNames = ["Wood", "Shizuke", "Mulder", "Ndidi"]
+    private let playerFirstNames = ["Robert", "Bill", "Evan", "Richard", "Pepper", "Mauro", "Lucas", "Niels"]
+    private let playerLastNames = ["Wood", "Shizuke", "Mulder", "Ndidi", "Lee", "San Giorgi", "van der Sloot"]
     
     var teams: [TeamModel] = []
     

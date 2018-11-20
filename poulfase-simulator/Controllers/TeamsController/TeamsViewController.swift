@@ -57,15 +57,18 @@ extension TeamsViewController: UITableViewDelegate, UITableViewDataSource {
         view.backgroundColor = UIColor.init(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
         
         let team = model.teams[section]
+        let powerViewSize: CGFloat = 35
         
         let nameLabel = UILabel(frame: CGRect(x: 10, y: 0, width: view.frame.size.width - 20, height: view.frame.size.height))
         nameLabel.text = team.name
         nameLabel.textColor = .black
         view.addSubview(nameLabel)
         
-        /*let line = UIView(frame: CGRect(x: 0, y: view.frame.size.height - 1, width: view.frame.size.width, height: 1))
-        line.backgroundColor = .gray
-        view.addSubview(line)*/
+        let powerLabel = UILabel(frame: CGRect(x: view.frame.size.width - powerViewSize - 10, y: (view.frame.size.height - powerViewSize) / 2, width: powerViewSize, height: powerViewSize))
+        powerLabel.text = "\(team.power)"
+        powerLabel.textColor = .black
+        powerLabel.textAlignment = .center
+        view.addSubview(powerLabel)
         
         return view
     }
