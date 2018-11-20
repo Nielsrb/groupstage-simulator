@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 final class TeamsModel: NSObject {
     private let teamFirstNames = ["Real", "SC", "FC", "Atletico"]
@@ -14,6 +15,8 @@ final class TeamsModel: NSObject {
     
     private let playerFirstNames = ["Robert", "Bill", "Evan", "Richard", "Pepper", "Mauro", "Lucas", "Niels"]
     private let playerLastNames = ["Wood", "Shizuke", "Mulder", "Ndidi", "Lee", "San Giorgi", "van der Sloot"]
+    
+    private var chosenPlayerNames: [String] = []
     
     var teams: [TeamModel] = []
     
@@ -32,13 +35,26 @@ final class TeamsModel: NSObject {
     private func generateTeamModel() -> TeamModel {
         let firstName = teamFirstNames[Int.random(in: 0 ..< teamFirstNames.count)]
         let lastName = teamLastNames[Int.random(in: 0 ..< teamLastNames.count)]
+        let teamName = "\(firstName) \(lastName)"
         
-        let name = "\(firstName) \(lastName)"
+        // Making sure teams can ever have the same name.
+        var valid = true
+        for team in teams {
+            if team.name == teamName {
+                valid = false
+                break
+            }
+        }
+        
+        guard valid else {
+            return generateTeamModel()
+        }
+        
         let formation = generateRandomFormation()
         let players = generatePlayerModels(formation: formation)
         let power = teamPowerFor(players: players)
         
-        return TeamModel(name: name, formation: formation, players: players, power: power)
+        return TeamModel(name: teamName, formation: formation, players: players, power: power)
     }
     
     // Generate a player, random names and power
@@ -49,6 +65,21 @@ final class TeamsModel: NSObject {
         for i in 0 ..< 11 {
             let firstName = playerFirstNames[Int.random(in: 0 ..< playerFirstNames.count)]
             let lastName = playerLastNames[Int.random(in: 0 ..< playerLastNames.count)]
+            let fullName = "\(firstName) \(lastName)"
+            
+            // Making sure a team can't contain 2 players with the same name.
+            var valid = true
+            for player in players {
+                if "\(player.firstName) \(player.lastName)" == fullName {
+                    valid = false
+                    break
+                }
+            }
+            
+            guard valid else  {
+                return generatePlayerModels(formation:formation)
+            }
+            
             let age = Int.random(in: 18 ... 34)
             let power = Int.random(in: 50...100)
             
@@ -110,21 +141,22 @@ final class TeamsModel: NSObject {
             break
         }
         
-        // TODO: - Position is not calculated properly yet.
+        // TODO: - Positions are almost perfectly calculated now, might want a new fomule to perfectionate it.
+        //
         if position < form.0 { // player is in first row (forwarder)
-            let xPos = ceil(Double((5 / form.0)) * Double(position))
+            let xPos = floor((CGFloat(9) / CGFloat(form.0 + 1)) * CGFloat(position + 1))
             
             return (Int(xPos), 3)
         } else if position < (form.0 + form.1) { // player is in second row (midfielder)
-            let xPos = (5 / form.1) * (position - form.0)
+            let xPos = floor((CGFloat(9) / CGFloat(form.1 + 1)) * CGFloat(position - form.0 + 1))
             
-            return (xPos, 2)
+            return (Int(xPos), 2)
         } else if position < (form.0 + form.1 + form.2) { // player is in third row (defender)
-            let xPos = (5 / form.2) * (position - form.0 - form.1)
+            let xPos = floor((CGFloat(9) / CGFloat(form.2 + 1)) * CGFloat(position - form.0 - form.1 + 1))
             
-            return (xPos, 1)
+            return (Int(xPos), 1)
         } else { // player is in last row (keeper)
-            return (0, 0)
+            return (4, 0)
         }
     }
 }
