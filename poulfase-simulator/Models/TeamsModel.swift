@@ -139,18 +139,28 @@ final class TeamsModel: NSObject {
             break
         }
         
-        // TODO: - Positions are almost perfectly calculated now, might want a new fomule to perfectionate it.
-        //
+        // Calculate position for a player
         if position < form.0 { // player is in first row (forwarder)
-            let xPos = floor((CGFloat(9) / CGFloat(form.0 + 1)) * CGFloat(position + 1))
+            let playerSpace: CGFloat = 9 / CGFloat(form.0)
+            let locInPlayerSpace: CGFloat = playerSpace / 2
+            let totalLoc: CGFloat = (playerSpace * CGFloat(position)) + locInPlayerSpace
+            let xPos = Int(floor(totalLoc))
             
-            return (Int(xPos), 3)
+            return (xPos, 3)
         } else if position < (form.0 + form.1) { // player is in second row (midfielder)
-            let xPos = floor((CGFloat(9) / CGFloat(form.1 + 1)) * CGFloat(position - form.0 + 1))
+            let pos = position - form.0
+            let playerSpace: CGFloat = 9 / CGFloat(form.1)
+            let locInPlayerSpace: CGFloat = playerSpace / 2
+            let totalLoc: CGFloat = (playerSpace * CGFloat(pos)) + locInPlayerSpace
+            let xPos = Int(floor(totalLoc))
             
             return (Int(xPos), 2)
         } else if position < (form.0 + form.1 + form.2) { // player is in third row (defender)
-            let xPos = floor((CGFloat(9) / CGFloat(form.2 + 1)) * CGFloat(position - form.0 - form.1 + 1))
+            let pos = position - form.0 - form.1
+            let playerSpace: CGFloat = 9 / CGFloat(form.2)
+            let locInPlayerSpace: CGFloat = playerSpace / 2
+            let totalLoc: CGFloat = (playerSpace * CGFloat(pos)) + locInPlayerSpace
+            let xPos = Int(floor(totalLoc))
             
             return (Int(xPos), 1)
         } else { // player is in last row (keeper)
