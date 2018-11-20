@@ -58,7 +58,7 @@ extension TeamsViewController: UITableViewDelegate, UITableViewDataSource {
         
         let team = model.teams[section]
         
-        let nameLabel = UILabel(frame: view.bounds)
+        let nameLabel = UILabel(frame: CGRect(x: 10, y: 0, width: view.frame.size.width - 20, height: view.frame.size.height))
         nameLabel.text = team.name
         nameLabel.textColor = .black
         view.addSubview(nameLabel)
@@ -103,7 +103,10 @@ extension TeamsViewController: UITableViewDelegate, UITableViewDataSource {
         
         let player = model.teams[indexPath.section].players[indexPath.row]
         
-        cell?.nameLabel.text = "\(player.lastName), \(player.firstName)"
+        let nameText = NSMutableAttributedString(string: "\(player.firstName) ")
+        nameText.append(NSMutableAttributedString(string: "\(player.lastName)").bold(size: 14))
+        
+        cell?.nameLabel.attributedText = nameText
         cell?.powerLabel.text = "\(player.power)"
         
         return cell!
@@ -120,15 +123,19 @@ private class PlayerCell: UITableViewCell {
     let nameLabel = UILabel()
     let powerLabel = UILabel()
     
+    let padding: CGFloat = 10
+    let powerViewSize: CGFloat = 35
+    
     init() {
         super.init(style: .default, reuseIdentifier: PlayerCell.identifier)
         
         nameLabel.textColor = .black
+        nameLabel.font = UIFont.systemFont(ofSize: 14)
         addSubview(nameLabel)
         
         powerLabel.textColor = .black
         powerLabel.textAlignment = .center
-        powerLabel.font = UIFont.systemFont(ofSize: 20)
+        powerLabel.font = UIFont.systemFont(ofSize: 18)
         //powerLabel.backgroundColor = .green
         powerLabel.layer.cornerRadius = 4
         powerLabel.clipsToBounds = true
@@ -142,10 +149,10 @@ private class PlayerCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        nameLabel.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
+        nameLabel.frame = CGRect(x: 10, y: 0, width: frame.size.width - 10 - powerViewSize - 10, height: frame.size.height)
         
         powerLabel.sizeToFit()
-        powerLabel.frame = CGRect(x: frame.size.width - 50, y: (frame.size.height - 40) / 2, width: 40, height: 40)
+        powerLabel.frame = CGRect(x: frame.size.width - powerViewSize - 10, y: (frame.size.height - powerViewSize) / 2, width: powerViewSize, height: powerViewSize)
         powerLabel.backgroundColor = Int(powerLabel.text ?? "") ?? 50 >= 100 ? .yellow : .green
     }
     
