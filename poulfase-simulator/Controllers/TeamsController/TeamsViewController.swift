@@ -111,6 +111,7 @@ extension TeamsViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell?.nameLabel.attributedText = nameText
         cell?.powerLabel.text = "\(player.power)"
+        cell?.position = player.position
         
         return cell!
     }
@@ -125,9 +126,12 @@ private class PlayerCell: UITableViewCell {
     
     let nameLabel = UILabel()
     let powerLabel = UILabel()
+    let positionLabel = UILabel()
     
+    var position: (Int, Int) = (0, 0)
     let padding: CGFloat = 10
-    let powerViewSize: CGFloat = 35
+    let infoViewSize: CGFloat = 35
+    let positionViewSize: CGFloat = 45
     
     init() {
         super.init(style: .default, reuseIdentifier: PlayerCell.identifier)
@@ -143,6 +147,14 @@ private class PlayerCell: UITableViewCell {
         powerLabel.layer.cornerRadius = 4
         powerLabel.clipsToBounds = true
         addSubview(powerLabel)
+        
+        positionLabel.textColor = .black
+        positionLabel.textAlignment = .center
+        positionLabel.font = UIFont.systemFont(ofSize: 18)
+        positionLabel.layer.cornerRadius = 4
+        positionLabel.clipsToBounds = true
+        addSubview(positionLabel)
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -152,11 +164,15 @@ private class PlayerCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        nameLabel.frame = CGRect(x: 10, y: 0, width: frame.size.width - 10 - powerViewSize - 10, height: frame.size.height)
+        nameLabel.frame = CGRect(x: 10, y: 0, width: frame.size.width - 10 - infoViewSize - 10, height: frame.size.height)
         
         powerLabel.sizeToFit()
-        powerLabel.frame = CGRect(x: frame.size.width - powerViewSize - 10, y: (frame.size.height - powerViewSize) / 2, width: powerViewSize, height: powerViewSize)
+        powerLabel.frame = CGRect(x: frame.size.width - infoViewSize - 10, y: (frame.size.height - infoViewSize) / 2, width: infoViewSize, height: infoViewSize)
         powerLabel.backgroundColor = Int(powerLabel.text ?? "") ?? 50 >= 100 ? .yellow : .green
+        
+        positionLabel.frame = CGRect(x: powerLabel.frame.origin.x - 10 - positionViewSize, y: (frame.size.height - infoViewSize) / 2, width: positionViewSize, height: infoViewSize)
+        positionLabel.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
+        positionLabel.text = getStringForPosition(position: position)
     }
     
     private func getColorForPower(power: Int) -> UIColor {
@@ -164,6 +180,36 @@ private class PlayerCell: UITableViewCell {
             return .yellow
         } else {
             return .green
+        }
+    }
+    
+    func getColorForPosition(position: (Int, Int)) -> UIColor {
+        switch position.1 {
+        case 0: // keeper
+            return .black
+        case 1: // defender
+            return .green
+        case 2: // midfielder
+            return .orange
+        case 3: // forwarder
+            return .red
+        default:
+            return .black
+        }
+    }
+    
+    func getStringForPosition(position: (Int, Int)) -> String {
+        switch position.1 {
+        case 0: // keeper
+            return "GK"
+        case 1: // defender
+            return "DEF"
+        case 2: // midfielder
+            return "MID"
+        case 3: // forwarder
+            return "FW"
+        default:
+            return "GK"
         }
     }
 }

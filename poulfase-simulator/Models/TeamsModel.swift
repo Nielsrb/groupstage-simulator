@@ -17,7 +17,7 @@ final class TeamsModel: NSObject {
     
     var teams: [TeamModel] = []
     
-    // public funtion to generate 4 random teams, can only be called once
+    // Public funtion to generate 4 random teams, can only be called once
     public func generateTeams() {
         guard teams.count == 0 else {
             return
@@ -28,31 +28,37 @@ final class TeamsModel: NSObject {
         }
     }
     
+    // Generate a new team with random players
     private func generateTeamModel() -> TeamModel {
         let firstName = teamFirstNames[Int.random(in: 0 ..< teamFirstNames.count)]
         let lastName = teamLastNames[Int.random(in: 0 ..< teamLastNames.count)]
         
         let name = "\(firstName) \(lastName)"
-        let players = generatePlayerModels()
+        let formation = generateRandomFormation()
+        let players = generatePlayerModels(formation: formation)
         let power = teamPowerFor(players: players)
         
-        return TeamModel(name: name, players: players, power: power)
+        return TeamModel(name: name, formation: formation, players: players, power: power)
     }
     
-    private func generatePlayerModels() -> [PlayerModel] {
+    // Generate a player, random names and power
+    // TODO: - Players should not be able to have the same first and last name.
+    private func generatePlayerModels(formation: Formations) -> [PlayerModel] {
         var players: [PlayerModel] = []
         
-        for _ in 0..<11 {
+        for i in 0 ..< 11 {
             let firstName = playerFirstNames[Int.random(in: 0 ..< playerFirstNames.count)]
             let lastName = playerLastNames[Int.random(in: 0 ..< playerLastNames.count)]
+            let age = Int.random(in: 18 ... 34)
             let power = Int.random(in: 50...100)
             
-            players.append(PlayerModel(firstName: firstName, lastName: lastName, power: power))
+            players.append(PlayerModel(firstName: firstName, lastName: lastName, age: age, power: power, position: positionForPlayer(formation: formation, position: i)))
         }
         
         return players
     }
     
+    // Function to get a teams power
     // Team power is the average power of all team players.
     private func teamPowerFor(players: [PlayerModel]) -> Int {
         var totalPower: Int = 0
@@ -63,17 +69,85 @@ final class TeamsModel: NSObject {
         
         return totalPower / players.count
     }
+    
+    // Generate a random formation
+    private func generateRandomFormation() -> Formations {
+        let random = Int.random(in: 0 ... 4)
         
+        switch random {
+        case 0:
+            return .A
+        case 1:
+            return .B
+        case 2:
+            return .C
+        case 3:
+            return .D
+        case 4:
+            return .E
+        default:
+            return .A
+        }
+    }
+    
+    private func positionForPlayer(formation: Formations, position: Int) -> (Int, Int) {
+        var form = (2, 4, 4)
+        
+        switch formation {
+        case .A:
+            form = (2, 4, 4)
+        case .B:
+            form = (3, 3, 4)
+            break
+        case .C:
+            form = (4, 2, 4)
+            break
+        case .D:
+            form = (1, 4, 5)
+            break
+        case .E:
+            form = (3, 4, 3)
+            break
+        }
+        
+        // TODO: - Position is not calculated properly yet.
+        if position < form.0 { // player is in first row (forwarder)
+            let xPos = ceil(Double((5 / form.0)) * Double(position))
+            
+            return (Int(xPos), 3)
+        } else if position < (form.0 + form.1) { // player is in second row (midfielder)
+            let xPos = (5 / form.1) * (position - form.0)
+            
+            return (xPos, 2)
+        } else if position < (form.0 + form.1 + form.2) { // player is in third row (defender)
+            let xPos = (5 / form.2) * (position - form.0 - form.1)
+            
+            return (xPos, 1)
+        } else { // player is in last row (keeper)
+            return (0, 0)
+        }
+    }
 }
 
-struct TeamModel: Codable {
+struct TeamModel {
     let name: String
+    let formation: Formations
     let players: [PlayerModel]
     let power: Int
 }
 
-struct PlayerModel: Codable {
+struct PlayerModel {
     let firstName: String
     let lastName: String
+    let age: Int
     let power: Int
+    let position: (Int, Int)
+}
+
+enum Formations {
+    case A
+    case B
+    case C
+    case D
+    case E
 }
