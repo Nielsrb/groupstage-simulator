@@ -15,7 +15,7 @@
 		4662019621A30D590041FE63 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019521A30D590041FE63 /* View.swift */; };
 		4662019821A30E6B0041FE63 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019721A30E6B0041FE63 /* Controller.swift */; };
 		4662019B21A30ECA0041FE63 /* TeamsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019A21A30ECA0041FE63 /* TeamsViewController.swift */; };
-		4662019D21A3100A0041FE63 /* TeamModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019C21A3100A0041FE63 /* TeamModel.swift */; };
+		4662019D21A3100A0041FE63 /* TeamsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019C21A3100A0041FE63 /* TeamsModel.swift */; };
 		466201A021A310B70041FE63 /* TeamsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019F21A310B70041FE63 /* TeamsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -30,7 +30,7 @@
 		4662019521A30D590041FE63 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		4662019721A30E6B0041FE63 /* Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
 		4662019A21A30ECA0041FE63 /* TeamsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsViewController.swift; sourceTree = "<group>"; };
-		4662019C21A3100A0041FE63 /* TeamModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamModel.swift; sourceTree = "<group>"; };
+		4662019C21A3100A0041FE63 /* TeamsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsModel.swift; sourceTree = "<group>"; };
 		4662019F21A310B70041FE63 /* TeamsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,7 +80,7 @@
 		4662019221A30CF30041FE63 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				4662019C21A3100A0041FE63 /* TeamModel.swift */,
+				4662019C21A3100A0041FE63 /* TeamsModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -192,7 +192,7 @@
 			files = (
 				4662018321A3032F0041FE63 /* RootViewController.swift in Sources */,
 				4662018121A3032F0041FE63 /* AppDelegate.swift in Sources */,
-				4662019D21A3100A0041FE63 /* TeamModel.swift in Sources */,
+				4662019D21A3100A0041FE63 /* TeamsModel.swift in Sources */,
 				4662019821A30E6B0041FE63 /* Controller.swift in Sources */,
 				4662019B21A30ECA0041FE63 /* TeamsViewController.swift in Sources */,
 				466201A021A310B70041FE63 /* TeamsView.swift in Sources */,

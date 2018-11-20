@@ -8,16 +8,27 @@
 
 import Foundation
 
-final class TeamObject: NSObject {
+final class TeamsModel: NSObject {
     private let teamFirstNames = ["Real", "SC", "FC", "Atletico"]
     private let teamLastNames = ["Cambuur", "Madrid", "Hotspur", "Zoetermeer"]
     
     private let playerFirstNames = ["Robert", "Bill", "Evan", "Richard"]
     private let playerLastNames = ["Wood", "Shizuke", "Mulder", "Ndidi"]
     
-    var model: TeamModel?
+    var teams: [TeamModel] = []
     
-    public func generateTeamModel() {
+    // public funtion to generate 4 random teams, can only be called once
+    public func generateTeams() {
+        guard teams.count == 0 else {
+            return
+        }
+        
+        for _ in 0..<4 {
+            teams.append(generateTeamModel())
+        }
+    }
+    
+    private func generateTeamModel() -> TeamModel {
         let firstName = teamFirstNames[Int.random(in: 0 ..< teamFirstNames.count)]
         let lastName = teamLastNames[Int.random(in: 0 ..< teamLastNames.count)]
         
@@ -25,7 +36,7 @@ final class TeamObject: NSObject {
         let players = generatePlayerModels()
         let power = teamPowerFor(players: players)
         
-        model = TeamModel(name: name, players: players, power: power)
+        return TeamModel(name: name, players: players, power: power)
     }
     
     private func generatePlayerModels() -> [PlayerModel] {
@@ -43,7 +54,7 @@ final class TeamObject: NSObject {
     }
     
     // Team power is the average power of all team players.
-    func teamPowerFor(players: [PlayerModel]) -> Int {
+    private func teamPowerFor(players: [PlayerModel]) -> Int {
         var totalPower: Int = 0
         
         for player in players {
