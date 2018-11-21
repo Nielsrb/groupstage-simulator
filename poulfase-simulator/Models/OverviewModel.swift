@@ -15,7 +15,7 @@ final class OverviewModel: NSObject {
     var games: [Game] = []
     var currentGame: Game?
     
-    let numberOfTurns: Int = 25
+    let numberOfTurns: Int = 30
     
     public func generateGames() {
         let teamsModel = TeamsModel.shared
@@ -74,7 +74,7 @@ final class OverviewModel: NSObject {
         //TODO: - Simulate a turn
         
         // First move of the second half, the goalkeeper should start with the ball (might create actual kick-off later on
-        if game.turns.count >= (numberOfTurns / 2) {
+        if game.turns.count == (numberOfTurns / 2) {
             print("First half finished! Away's keeper is now ball holder")
             game.ballHolder = game.awayTeam.players.last!
         }
