@@ -16,10 +16,10 @@ class RootViewController: UINavigationController {
         
         let tabbarcontroller = UITabBarController()
         
-        let teamsViewController = TeamsViewController(view: TeamsView())
+        let teamsViewController = TeamsViewController(view: TeamsView(frame: view.bounds))
         teamsViewController.tabBarItem =  UITabBarItem(title: "Teams", image: UIImage(named: "ic_team"), selectedImage: UIImage.coloredImage(named: "ic_team", color: Colors.blue))
         
-        let overviewViewController = OverviewViewController(view: OverviewView())
+        let overviewViewController = OverviewViewController(view: OverviewView(frame: view.bounds))
         overviewViewController.tabBarItem =  UITabBarItem(title: "Overview", image: UIImage(named: "ic_overview"), selectedImage: UIImage.coloredImage(named: "ic_overview", color: Colors.blue))
         
         tabbarcontroller.viewControllers = [teamsViewController, overviewViewController]

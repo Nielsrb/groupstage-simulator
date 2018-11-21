@@ -7,5 +7,14 @@
 //
 
 import Foundation
+import UIKit
 
-protocol View {}
+protocol ViewProtocol {
+    func shouldRefresh()
+}
+
+class View: UIView, ViewProtocol {
+    func shouldRefresh() {
+        
+    }
+}

@@ -9,6 +9,17 @@
 import Foundation
 import UIKit
 
-final class OverviewView: UIView, View {
+final class OverviewView: View {
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func shouldRefresh() {
+        
+    }
 }
