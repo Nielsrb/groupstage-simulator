@@ -1,6 +1,6 @@
 //
 //  Constants.swift
-//  poulfase-simulator
+//  groupstage-simulator
 //
 //  Created by Niels Beeuwkes on 20/11/2018.
 //  Copyright © 2018 Niels Beeuwkes. All rights reserved.

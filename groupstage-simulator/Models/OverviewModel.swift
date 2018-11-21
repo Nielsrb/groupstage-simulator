@@ -1,6 +1,6 @@
 //
 //  OverviewModel.swift
-//  poulfase-simulator
+//  groupstage-simulator
 //
 //  Created by Niels Beeuwkes on 21-11-18.
 //  Copyright © 2018 Niels Beeuwkes. All rights reserved.
@@ -52,9 +52,10 @@ final class OverviewModel: NSObject {
         }
         
         // All teams should play home/away atleast once against each contestant, so we reverse the previous
+        /* [TURNED OFF] - This is not part of the instructions because it is the group stage
         for game in games {
             games.append(reverseTeamsFor(game: game))
-        }
+        }*/
     }
     
     private func reverseTeamsFor(game: Game) -> Game {

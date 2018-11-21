@@ -1,6 +1,6 @@
 //
 //  OverviewViewController.swift
-//  poulfase-simulator
+//  groupstage-simulator
 //
 //  Created by Niels Beeuwkes on 21-11-18.
 //  Copyright © 2018 Niels Beeuwkes. All rights reserved.
@@ -12,22 +12,17 @@ import UIKit
 final class OverviewViewController: UIViewController, Controller {
     
     let controllerView: View
-    let cellHeight: CGFloat = 100
     
     init(view: View) {
         controllerView = view
         
         super.init(nibName: nil, bundle: nil)
         
-        self.view.backgroundColor = .white
-        
         OverviewModel.shared.generateGames()
-        
-        // For testing purposes, remove later.
-        OverviewModel.shared.simulateGame(game: &OverviewModel.shared.games[0])
     }
     
     override func viewDidLoad() {
+        view.addSubview(controllerView)
     }
     
     required init?(coder aDecoder: NSCoder) {

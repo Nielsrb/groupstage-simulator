@@ -38,7 +38,7 @@
 		460C00C821A468670001511D /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		460C00CC21A4697B0001511D /* ic_team@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_team@3x.png"; sourceTree = "<group>"; };
 		460C00D021A46E630001511D /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
-		4662017D21A3032F0041FE63 /* poulfase-simulator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "poulfase-simulator.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4662017D21A3032F0041FE63 /* groupstage-simulator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "groupstage-simulator.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4662018021A3032F0041FE63 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4662018221A3032F0041FE63 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		4662018521A3032F0041FE63 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -108,7 +108,7 @@
 		4662017421A3032F0041FE63 = {
 			isa = PBXGroup;
 			children = (
-				4662017F21A3032F0041FE63 /* poulfase-simulator */,
+				4662017F21A3032F0041FE63 /* groupstage-simulator */,
 				4662017E21A3032F0041FE63 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -116,12 +116,12 @@
 		4662017E21A3032F0041FE63 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4662017D21A3032F0041FE63 /* poulfase-simulator.app */,
+				4662017D21A3032F0041FE63 /* groupstage-simulator.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		4662017F21A3032F0041FE63 /* poulfase-simulator */ = {
+		4662017F21A3032F0041FE63 /* groupstage-simulator */ = {
 			isa = PBXGroup;
 			children = (
 				4662018021A3032F0041FE63 /* AppDelegate.swift */,
@@ -138,7 +138,7 @@
 				4662018921A303300041FE63 /* LaunchScreen.storyboard */,
 				4662018C21A303300041FE63 /* Info.plist */,
 			);
-			path = "poulfase-simulator";
+			path = "groupstage-simulator";
 			sourceTree = "<group>";
 		};
 		4662019221A30CF30041FE63 /* Models */ = {
@@ -189,9 +189,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		4662017C21A3032F0041FE63 /* poulfase-simulator */ = {
+		4662017C21A3032F0041FE63 /* groupstage-simulator */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4662018F21A303300041FE63 /* Build configuration list for PBXNativeTarget "poulfase-simulator" */;
+			buildConfigurationList = 4662018F21A303300041FE63 /* Build configuration list for PBXNativeTarget "groupstage-simulator" */;
 			buildPhases = (
 				4662017921A3032F0041FE63 /* Sources */,
 				4662017A21A3032F0041FE63 /* Frameworks */,
@@ -201,9 +201,9 @@
 			);
 			dependencies = (
 			);
-			name = "poulfase-simulator";
+			name = "groupstage-simulator";
 			productName = "poulfase-simulator";
-			productReference = 4662017D21A3032F0041FE63 /* poulfase-simulator.app */;
+			productReference = 4662017D21A3032F0041FE63 /* groupstage-simulator.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -221,7 +221,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 4662017821A3032F0041FE63 /* Build configuration list for PBXProject "poulfase-simulator" */;
+			buildConfigurationList = 4662017821A3032F0041FE63 /* Build configuration list for PBXProject "groupstage-simulator" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -234,7 +234,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				4662017C21A3032F0041FE63 /* poulfase-simulator */,
+				4662017C21A3032F0041FE63 /* groupstage-simulator */,
 			);
 		};
 /* End PBXProject section */
@@ -421,13 +421,13 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 28LA88V8YZ;
-				INFOPLIST_FILE = "poulfase-simulator/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/groupstage-simulator/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "nielsrb.poulfase-simulator";
+				PRODUCT_BUNDLE_IDENTIFIER = "nielsrb.groupstage-simulator";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
@@ -442,13 +442,13 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 28LA88V8YZ;
-				INFOPLIST_FILE = "poulfase-simulator/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/groupstage-simulator/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "nielsrb.poulfase-simulator";
+				PRODUCT_BUNDLE_IDENTIFIER = "nielsrb.groupstage-simulator";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
@@ -459,7 +459,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4662017821A3032F0041FE63 /* Build configuration list for PBXProject "poulfase-simulator" */ = {
+		4662017821A3032F0041FE63 /* Build configuration list for PBXProject "groupstage-simulator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4662018D21A303300041FE63 /* Debug */,
@@ -468,7 +468,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4662018F21A303300041FE63 /* Build configuration list for PBXNativeTarget "poulfase-simulator" */ = {
+		4662018F21A303300041FE63 /* Build configuration list for PBXNativeTarget "groupstage-simulator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4662019021A303300041FE63 /* Debug */,
