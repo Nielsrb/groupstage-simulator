@@ -15,7 +15,7 @@ final class OverviewModel: NSObject {
     var games: [Game] = []
     var currentGame: Game?
     
-    let numberOfTurns: Int = 45
+    let numberOfTurns: Int = 25
     
     public func generateGames() {
         let teamsModel = TeamsModel.shared
@@ -74,7 +74,8 @@ final class OverviewModel: NSObject {
         //TODO: - Simulate a turn
         
         // First move of the second half, the goalkeeper should start with the ball (might create actual kick-off later on
-        if game.turns.count == (numberOfTurns / 2) - 1 {
+        if game.turns.count >= (numberOfTurns / 2) {
+            print("First half finished! Away's keeper is now ball holder")
             game.ballHolder = game.awayTeam.players.last!
         }
         
@@ -108,10 +109,10 @@ final class OverviewModel: NSObject {
             let keeper = game.holdingTeam == .home ? game.awayTeam.players.last! : game.homeTeam.players.last!
             
             // Either after scroring or missing, the ball should return to the others goalkeeper (might add chance for rebound?)
+            print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) scored! The score now stands \(game.goalsHome)-\(game.goalsAway)")
             game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: keeper, goal: goal))
             game.ballHolder = keeper
             game.holdingTeam = game.holdingTeam == .home ? .away : .home
-            
         } else {
             // Player is either a goalkeeper, defender or midfielder. He should try passing.
             // Player should make a decision who to pass to:
@@ -164,7 +165,7 @@ final class OverviewModel: NSObject {
             
             let randomTeammatesChanceValue = Double.random(in: 0 ..< totalTeammatesChance)
             var checkedTeammatesChance: Double = 0
-            var chosenTeammate: PlayerModel = teamMates.first!
+            var chosenTeammate: PlayerModel = posibleTeammates.first!.0
             for teammate in posibleTeammates {
                 if checkedTeammatesChance + teammate.1 < randomTeammatesChanceValue {
                     chosenTeammate = teammate.0
@@ -174,10 +175,10 @@ final class OverviewModel: NSObject {
             }
             
             // Now we know what player the current holder is passing to, we can calculate how much chance the player has in succeeding this.
-            // A pass starts with a chance based on the players power (10-30), bases on the following conditions, this can go up/down.
+            // A pass starts with a chance based on the players power (5-15), bases on the following conditions, this can go up/down.
             //   - Enemy teammates close to the player you are passing to. (Lowers the chance (1-5%). The further, the less effective.)
             //   - Friendly teammates close to the player you are passing to. (Increases the chance (1-7.5%). The further, the less effective.)
-            let baseChance = 10 + ((20 / 50) * (game.ballHolder.power - 50))
+            let baseChance = 5 + ((10 / 50) * (game.ballHolder.power - 50))
             var chances = [Double(baseChance)]
             
             // We have to know what enemies are able to intercept the pass.
@@ -189,18 +190,18 @@ final class OverviewModel: NSObject {
                 return nil
             }
             
+            // Removing itself from posible teammates to only keep the players capable of supporting him
+            let supportTeammates = posibleTeammates.compactMap { player -> (PlayerModel, Double)? in
+                if player.0 != chosenTeammate {
+                    return player
+                }
+                return nil
+            }
+            
             // When there are no enemies, pass succesion should be 100% (this should not be possible right now).
             if enemies.count == 0 {
                 chances[0] = 100
             } else {
-                // Removing itself from posible teammates to only keep the players capable of supporting him
-                let supportTeammates = posibleTeammates.compactMap { player -> (PlayerModel, Double)? in
-                    if player.0 != chosenTeammate {
-                        return player
-                    }
-                    return nil
-                }
-                
                 // Calculate the chances for each supporting teammate (1-5%)
                 for teammate in supportTeammates {
                     var gridDifference = chosenTeammate.position.0 - teammate.0.position.0
@@ -234,11 +235,13 @@ final class OverviewModel: NSObject {
             if randomChanceValue < chances[0] {
                 passSucceeded = true
             } else {
-                for i in 1 ..< posibleTeammates.count { // -1 for the person who is receiving the ball (can't acces supportedTeammates from here)
-                    if checkedChance + chances[i] < randomChanceValue {
-                        passSucceeded = true
-                    } else {
-                        checkedChance += chances[i]
+                if supportTeammates.count > 0 {
+                    for i in 1 ... supportTeammates.count { // -1 for the person who is receiving the ball (can't acces supportedTeammates from here)
+                        if checkedChance + chances[i] < randomChanceValue {
+                            passSucceeded = true
+                        } else {
+                            checkedChance += chances[i]
+                        }
                     }
                 }
             }
