@@ -15,7 +15,7 @@ final class OverviewModel: NSObject {
     var games: [Game] = []
     var currentGame: Game?
     
-    let numberOfTurns: Int = 90
+    let numberOfTurns: Int = 45
     
     public func generateGames() {
         let teamsModel = TeamsModel.shared
@@ -65,7 +65,8 @@ final class OverviewModel: NSObject {
         nextTurn(game: &game)
         
         //TODO: - Game finished simulating, show results/turns
-        print("Game finished!")
+        game.isSimulated = true
+        print("Game finished! Total score is \(game.goalsHome)-\(game.goalsAway)")
     }
     
     
@@ -156,24 +157,104 @@ final class OverviewModel: NSObject {
             
             // Now that we calculated the chances, lets see to what player the current ball holder will pass to.
             // First we need to know what the total amount of 'chance points' they got.
-            var totalChance: Double = 0
+            var totalTeammatesChance: Double = 0
             for teammate in posibleTeammates {
-                totalChance += teammate.1
+                totalTeammatesChance += teammate.1
             }
             
-            let randomValue = Double.random(in: 0 ..< totalChance)
-            var checkedChance: Double = 0
+            let randomTeammatesChanceValue = Double.random(in: 0 ..< totalTeammatesChance)
+            var checkedTeammatesChance: Double = 0
             var chosenTeammate: PlayerModel = teamMates.first!
             for teammate in posibleTeammates {
-                if checkedChance + teammate.1 < randomValue {
+                if checkedTeammatesChance + teammate.1 < randomTeammatesChanceValue {
                     chosenTeammate = teammate.0
                 } else {
-                    checkedChance += teammate.1
+                    checkedTeammatesChance += teammate.1
                 }
             }
             
-            game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: chosenTeammate, goal: false))
-            game.ballHolder = chosenTeammate
+            // Now we know what player the current holder is passing to, we can calculate how much chance the player has in succeeding this.
+            // A pass starts with a chance based on the players power (10-30), bases on the following conditions, this can go up/down.
+            //   - Enemy teammates close to the player you are passing to. (Lowers the chance (1-5%). The further, the less effective.)
+            //   - Friendly teammates close to the player you are passing to. (Increases the chance (1-7.5%). The further, the less effective.)
+            let baseChance = 10 + ((20 / 50) * (game.ballHolder.power - 50))
+            var chances = [Double(baseChance)]
+            
+            // We have to know what enemies are able to intercept the pass.
+            let yPosEnemies = 4 - chosenTeammate.position.1
+            let enemies = (game.holdingTeam == .home ? game.awayTeam : game.homeTeam).players.compactMap { player -> PlayerModel? in
+                if player.position.1 == yPosEnemies {
+                    return player
+                }
+                return nil
+            }
+            
+            // When there are no enemies, pass succesion should be 100% (this should not be possible right now).
+            if enemies.count == 0 {
+                chances[0] = 100
+            } else {
+                // Removing itself from posible teammates to only keep the players capable of supporting him
+                let supportTeammates = posibleTeammates.compactMap { player -> (PlayerModel, Double)? in
+                    if player.0 != chosenTeammate {
+                        return player
+                    }
+                    return nil
+                }
+                
+                // Calculate the chances for each supporting teammate (1-5%)
+                for teammate in supportTeammates {
+                    var gridDifference = chosenTeammate.position.0 - teammate.0.position.0
+                    if gridDifference < 0 {
+                        gridDifference = -gridDifference
+                    }
+                    let chance = max(1, 6 - gridDifference) // 6 instead of 5 because a teammate could never be on the same x-pos on the grid
+                    chances.append(Double(chance))
+                }
+                
+                // Calculate the chances for each enemy (1-7.5%)
+                for enemy in enemies {
+                    var gridDifference = chosenTeammate.position.0 - enemy.position.0
+                    if gridDifference < 0 {
+                        gridDifference = -gridDifference
+                    }
+                    let chance = max(1.0, 7.5 - Double(gridDifference))
+                    chances.append(chance)
+                }
+            }
+            
+            var totalChances: Double = 0
+            for chance in chances {
+                totalChances += chance
+            }
+            
+            let randomChanceValue = Double.random(in: 0 ..< totalChances)
+            var checkedChance: Double = 0
+            var passSucceeded = false
+            
+            if randomChanceValue < chances[0] {
+                passSucceeded = true
+            } else {
+                for i in 1 ..< posibleTeammates.count { // -1 for the person who is receiving the ball (can't acces supportedTeammates from here)
+                    if checkedChance + chances[i] < randomChanceValue {
+                        passSucceeded = true
+                    } else {
+                        checkedChance += chances[i]
+                    }
+                }
+            }
+            
+            if passSucceeded {
+                print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) passed to \(chosenTeammate.firstName) \(chosenTeammate.lastName)!")
+                game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: chosenTeammate, goal: false))
+                game.ballHolder = chosenTeammate
+            } else {
+                let receivingEnemy = enemies.randomElement() ?? enemies[0]
+                
+                print("\(receivingEnemy.firstName) \(receivingEnemy.lastName) intercepts the pass!")
+                game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: receivingEnemy, goal: false))
+                game.ballHolder = receivingEnemy
+                game.holdingTeam = game.holdingTeam == .home ? .away : .home
+            }
             
         }
         
