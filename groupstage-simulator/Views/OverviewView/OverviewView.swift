@@ -13,6 +13,7 @@ final class OverviewView: View {
     
     let tableView = UITableView()
     let cellHeight: CGFloat = 50
+    let padding: CGFloat = 10
     
     let model = OverviewModel.shared
     
@@ -54,6 +55,24 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
         
         let game = model.games[section]
         
+        let versusLabel = UILabel(frame: CGRect(x: (view.frame.size.width - 30) / 2, y: 0, width: 30, height: view.frame.size.height))
+        versusLabel.text = "vs"
+        versusLabel.textColor = .white
+        versusLabel.textAlignment = .center
+        view.addSubview(versusLabel)
+        
+        let homeLabel = UILabel(frame: CGRect(x: padding, y: 0, width: (view.frame.size.width / 2) - (padding*2) - (versusLabel.frame.size.width / 2), height: view.frame.size.height))
+        homeLabel.text = game.homeTeam.name
+        homeLabel.textColor = .white
+        homeLabel.textAlignment = .left
+        view.addSubview(homeLabel)
+        
+        let awayLabel = UILabel(frame: CGRect(x: (view.frame.size.width / 2) + (versusLabel.frame.size.width / 2) + padding, y: 0, width: (view.frame.size.width / 2) - (padding*2) - (versusLabel.frame.size.width / 2), height: view.frame.size.height))
+        awayLabel.text = game.awayTeam.name
+        awayLabel.textColor = .white
+        awayLabel.textAlignment = .right
+        view.addSubview(awayLabel)
+        
         return view
     }
     
@@ -88,7 +107,7 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
             cell = GameCell()
         }
         
-        let turn = model.games[indexPath.section]
+        let game = model.games[indexPath.section]
         
         return cell!
     }
