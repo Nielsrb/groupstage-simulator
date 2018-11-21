@@ -179,7 +179,12 @@ struct TeamModel {
     let power: Int
 }
 
-struct PlayerModel {
+struct PlayerModel: Equatable {
+    
+    static func == (lhs: PlayerModel, rhs: PlayerModel) -> Bool {
+        return ("\(lhs.firstName) \(lhs.lastName)") == ("\(rhs.firstName) \(rhs.lastName)")
+    }
+    
     let firstName: String
     let lastName: String
     let age: Int
