@@ -10,6 +10,9 @@ import Foundation
 import UIKit
 
 final class TeamsModel: NSObject {
+    
+    static let shared = TeamsModel()
+    
     private let teamFirstNames = ["Real", "SC", "FC", "Atletico"]
     private let teamLastNames = ["Cambuur", "Madrid", "Hotspur", "Zoetermeer", "Barcelona", "London", "Amsterdam", "Kaapstad"]
     
@@ -184,10 +187,10 @@ struct PlayerModel {
     let position: (Int, Int)
 }
 
-enum Formations {
-    case A
-    case B
-    case C
-    case D
-    case E
+enum Formations: String {
+    case A = "2-4-4"
+    case B = "3-3-4"
+    case C = "4-2-4"
+    case D = "1-4-5"
+    case E = "3-4-3"
 }

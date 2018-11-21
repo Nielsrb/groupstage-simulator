@@ -12,13 +12,16 @@ import UIKit
 final class TeamsViewController: UIViewController, Controller {
     
     // Teams model, contains all teams with its players.
-    var model = TeamsModel()
+    var model = TeamsModel.shared
     
+    let controllerView: View
     let tableView = UITableView()
     
     let cellHeight: CGFloat = 50
     
     init(view: View) {
+        controllerView = view
+        
         super.init(nibName: nil, bundle: nil)
         
         // Generate 4 new teams, can only be done once.
@@ -54,20 +57,22 @@ extension TeamsViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: cellHeight))
-        view.backgroundColor = UIColor.init(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
+        view.backgroundColor = Colors.blue.UI
         
         let team = model.teams[section]
         let powerViewSize: CGFloat = 35
         
         let nameLabel = UILabel(frame: CGRect(x: 10, y: 0, width: view.frame.size.width - 20, height: view.frame.size.height))
         nameLabel.text = team.name
-        nameLabel.textColor = .black
+        nameLabel.textColor = .white
+        nameLabel.font = UIFont.boldSystemFont(ofSize: 18)
         view.addSubview(nameLabel)
         
         let powerLabel = UILabel(frame: CGRect(x: view.frame.size.width - powerViewSize - 10, y: (view.frame.size.height - powerViewSize) / 2, width: powerViewSize, height: powerViewSize))
         powerLabel.text = "\(team.power)"
-        powerLabel.textColor = .black
+        powerLabel.textColor = .white
         powerLabel.textAlignment = .center
+        powerLabel.font = UIFont.boldSystemFont(ofSize: 18)
         view.addSubview(powerLabel)
         
         return view
@@ -148,9 +153,10 @@ private class PlayerCell: UITableViewCell {
         powerLabel.clipsToBounds = true
         addSubview(powerLabel)
         
-        positionLabel.textColor = .black
+        positionLabel.textColor = .white
         positionLabel.textAlignment = .center
         positionLabel.font = UIFont.systemFont(ofSize: 18)
+        positionLabel.backgroundColor = Colors.darkGray.UI
         positionLabel.layer.cornerRadius = 4
         positionLabel.clipsToBounds = true
         addSubview(positionLabel)
@@ -168,10 +174,9 @@ private class PlayerCell: UITableViewCell {
         
         powerLabel.sizeToFit()
         powerLabel.frame = CGRect(x: frame.size.width - infoViewSize - 10, y: (frame.size.height - infoViewSize) / 2, width: infoViewSize, height: infoViewSize)
-        powerLabel.backgroundColor = Int(powerLabel.text ?? "") ?? 50 >= 100 ? .yellow : .green
+        powerLabel.backgroundColor = Int(powerLabel.text ?? "") ?? 50 >= 100 ? Colors.gold.UI : Colors.green.UI
         
         positionLabel.frame = CGRect(x: powerLabel.frame.origin.x - 10 - positionViewSize, y: (frame.size.height - infoViewSize) / 2, width: positionViewSize, height: infoViewSize)
-        positionLabel.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
         positionLabel.text = getStringForPosition(position: position)
     }
     

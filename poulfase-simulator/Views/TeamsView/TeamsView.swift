@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 
+
+// TODO: - Everything design related from TeamsViewController should be in here
 final class TeamsView: UIView, View {
     
 }

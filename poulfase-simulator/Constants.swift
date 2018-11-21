@@ -10,5 +10,8 @@ import Foundation
 import UIKit
 
 struct Colors {
-    static let main = UIColor(red: 44/255, green: 109/255, blue: 207/255, alpha: 1)
+    static let blue     = Color(44, 109, 206)
+    static let green    = Color(20, 200, 20)
+    static let gold     = Color(230, 230, 20)
+    static let darkGray = Color(100, 100, 100)
 }
