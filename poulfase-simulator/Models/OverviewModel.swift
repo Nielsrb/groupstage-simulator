@@ -102,8 +102,43 @@ final class OverviewModel: NSObject {
             game.ballHolder = game.holdingTeam == .home ? game.awayTeam.players.last! : game.homeTeam.players.last!
             game.holdingTeam = game.holdingTeam == .home ? .away : .home
             
-        } else { // Player is either a goalkeeper, defender or midfielder. He should try passing.
+        } else {
+            // Player is either a goalkeeper, defender or midfielder. He should try passing.
+            // Player should make a decision who to pass to:
+            //   - Every player starts with 100 'chance points'
+            //   - Stronger teammates get bonus chance (+2.5 per power)
+            //   - Further teammates get decreased chance (-7.5 per grid)
+            //
+            let yPosCurrentGrid = game.ballHolder.position.1
+            let teamMates = game.holdingTeam == .home ? game.homeTeam.players : game.awayTeam.players
             
+            // Posible teammates, all players the current ball holder is currently able to pass to
+            // .0 = PlayerModel
+            // .1 = Double, represents the amount of chance points someone has
+            var posibleTeammates = teamMates.compactMap { player -> (PlayerModel, Double)? in
+                if player.position.1 == yPosCurrentGrid + 1 {
+                    return (player, 100)
+                }
+                return nil
+            }
+            
+            // We should know the weakest posible teammate, the other teammates should get extra chance points
+            let lowestPower = posibleTeammates.compactMap { teammate -> Int in
+                return teammate.0.power
+            }.min() ?? 50
+            
+            for (index, teammate) in posibleTeammates.enumerated() {
+                // Add the +2.5 for each point stronger than the weakest layer
+                let powerDifference = teammate.0.power - lowestPower
+                posibleTeammates[index].1 += Double(powerDifference) * 2.5
+                
+                // Decrease the -5 for each grid further away from the current ball holder
+                var gridDifference = yPosCurrentGrid - teammate.0.position.1
+                if gridDifference < 0 {
+                    gridDifference = -gridDifference
+                }
+                posibleTeammates[index].1 -= Double(gridDifference) * 7.5
+            }
         }
         
         // If game still has turns left, simulate next turn!
