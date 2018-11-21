@@ -22,10 +22,12 @@ final class OverviewViewController: UIViewController, Controller {
         self.view.backgroundColor = .white
         
         OverviewModel.shared.generateGames()
+        
+        // For testing purposes, remove later.
+        OverviewModel.shared.simulateGame(game: &OverviewModel.shared.games[0])
     }
     
     override func viewDidLoad() {
-        
     }
     
     required init?(coder aDecoder: NSCoder) {

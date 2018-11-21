@@ -65,6 +65,7 @@ final class OverviewModel: NSObject {
         nextTurn(game: &game)
         
         //TODO: - Game finished simulating, show results/turns
+        print("Game finished!")
     }
     
     
@@ -92,14 +93,22 @@ final class OverviewModel: NSObject {
             
             let randomValue = Int.random(in: 0...totalPower)
             
+            var goal = false
             if randomValue < Int(goalValue) {
                 // GOAL
-            } else {
-                // MISS
+                if game.holdingTeam == .home {
+                    game.goalsHome += 1
+                } else {
+                    game.goalsAway += 1
+                }
+                goal = true
             }
             
+            let keeper = game.holdingTeam == .home ? game.awayTeam.players.last! : game.homeTeam.players.last!
+            
             // Either after scroring or missing, the ball should return to the others goalkeeper (might add chance for rebound?)
-            game.ballHolder = game.holdingTeam == .home ? game.awayTeam.players.last! : game.homeTeam.players.last!
+            game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: keeper, goal: goal))
+            game.ballHolder = keeper
             game.holdingTeam = game.holdingTeam == .home ? .away : .home
             
         } else {
@@ -122,6 +131,11 @@ final class OverviewModel: NSObject {
                 return nil
             }
             
+            guard posibleTeammates.count > 0 else {
+                nextTurn(game: &game)
+                return
+            }
+            
             // We should know the weakest posible teammate, the other teammates should get extra chance points
             let lowestPower = posibleTeammates.compactMap { teammate -> Int in
                 return teammate.0.power
@@ -139,6 +153,28 @@ final class OverviewModel: NSObject {
                 }
                 posibleTeammates[index].1 -= Double(gridDifference) * 7.5
             }
+            
+            // Now that we calculated the chances, lets see to what player the current ball holder will pass to.
+            // First we need to know what the total amount of 'chance points' they got.
+            var totalChance: Double = 0
+            for teammate in posibleTeammates {
+                totalChance += teammate.1
+            }
+            
+            let randomValue = Double.random(in: 0 ..< totalChance)
+            var checkedChance: Double = 0
+            var chosenTeammate: PlayerModel = teamMates.first!
+            for teammate in posibleTeammates {
+                if checkedChance + teammate.1 < randomValue {
+                    chosenTeammate = teammate.0
+                } else {
+                    checkedChance += teammate.1
+                }
+            }
+            
+            game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: chosenTeammate, goal: false))
+            game.ballHolder = chosenTeammate
+            
         }
         
         // If game still has turns left, simulate next turn!
