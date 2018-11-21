@@ -12,10 +12,10 @@ import UIKit
 final class OverviewView: View {
     
     let tableView = UITableView()
-    let cellHeight: CGFloat = 50
+    let cellHeight: CGFloat = 70
     let padding: CGFloat = 10
     
-    let model = OverviewModel.shared
+    var model = OverviewModel.shared
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -33,6 +33,7 @@ final class OverviewView: View {
     }
     
     override func shouldRefresh() {
+        model = OverviewModel.shared
         tableView.reloadData()
     }
 }
@@ -77,7 +78,7 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 50
+        return 75
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -108,6 +109,31 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
         }
         
         let game = model.games[indexPath.section]
+        cell?.playButton.tag = indexPath.section
+        
+        var isNextMatch = false
+        for (index, game) in model.games.enumerated() {
+            if game.isSimulated == false {
+                if index == indexPath.section {
+                    isNextMatch = true
+                }
+                
+                break
+            }
+        }
+        
+        if isNextMatch {
+            cell?.scoreLabel.isHidden = true
+            cell?.playButton.isHidden = false
+            
+            cell?.backgroundColor = .white
+        } else {
+            cell?.scoreLabel.isHidden = !game.isSimulated
+            cell?.playButton.isHidden = true
+            
+            cell?.scoreLabel.text = "\(game.goalsHome) - \(game.goalsAway)"
+            cell?.backgroundColor = Colors.lightGray.UI
+        }
         
         return cell!
     }
@@ -120,16 +146,27 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
 private class GameCell: UITableViewCell {
     static let identifier = "GAME"
     
-    let nameLabel = UILabel()
+    let scoreLabel = UILabel()
+    let playButton = UIButton()
     
+    let isNextMatch = false
     let padding: CGFloat = 10
     
     init() {
         super.init(style: .default, reuseIdentifier: GameCell.identifier)
         
-        nameLabel.textColor = .black
-        nameLabel.font = UIFont.systemFont(ofSize: 14)
-        addSubview(nameLabel)
+        backgroundColor = Colors.lightGray.UI
+        
+        scoreLabel.textColor = .black
+        scoreLabel.textAlignment = .center
+        scoreLabel.font = UIFont.systemFont(ofSize: 14)
+        addSubview(scoreLabel)
+        
+        playButton.backgroundColor = Colors.blue.UI
+        playButton.setTitle("PLAY", for: .normal)
+        playButton.layer.cornerRadius = 4
+        playButton.addTarget(self, action: #selector(playButtonPressed), for: .touchUpInside)
+        addSubview(playButton)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -139,6 +176,11 @@ private class GameCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        nameLabel.frame = CGRect(x: 10, y: 0, width: frame.size.width - 20, height: frame.size.height)
+        scoreLabel.frame = CGRect(x: 10, y: 0, width: frame.size.width - 20, height: frame.size.height)
+        playButton.frame = CGRect(x: frame.size.width * 0.3, y: padding, width: frame.size.width * 0.4, height: frame.size.height - (padding*2))
+    }
+    
+    @objc private func playButtonPressed() {
+        OverviewModel.shared.simulateGameWith(id: playButton.tag)
     }
 }

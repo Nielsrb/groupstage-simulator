@@ -19,6 +19,10 @@ final class OverviewViewController: UIViewController, Controller {
         super.init(nibName: nil, bundle: nil)
         
         OverviewModel.shared.generateGames()
+        
+        OverviewModel.shared.gameWasSimulatedEvent.bind(self) {
+            self.controllerView.shouldRefresh()
+        }
     }
     
     override func viewDidLoad() {

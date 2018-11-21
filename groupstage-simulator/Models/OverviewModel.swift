@@ -17,6 +17,8 @@ final class OverviewModel: NSObject {
     
     let numberOfTurns: Int = 30
     
+    let gameWasSimulatedEvent = Event<Void>()
+    
     public func generateGames() {
         let teamsModel = TeamsModel.shared
         
@@ -37,19 +39,12 @@ final class OverviewModel: NSObject {
         // C vs D
         // A vs D
         // B vs C
-        for (index, team) in teamsModel.teams.enumerated() {
-            if index == 0 {
-                games.append(Game(isSimulated: false, homeTeam: team, awayTeam: teamsModel.teams[2], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: team.players.last!))
-                games.append(Game(isSimulated: false, homeTeam: teamsModel.teams[1], awayTeam: team, goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[1].players.last!))
-            } else if index == 1 {
-                games.insert(Game(isSimulated: false, homeTeam: teamsModel.teams[3], awayTeam: team, goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[3].players.last!), at: 1)
-                games.append(Game(isSimulated: false, homeTeam: team, awayTeam: teamsModel.teams[2], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: team.players.last!))
-            } else if index == 2 {
-                games.insert(Game(isSimulated: false, homeTeam: team, awayTeam: teamsModel.teams[3], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: team.players.last!), at: 3)
-            } else if index == 3 {
-                games.insert(Game(isSimulated: false, homeTeam: teamsModel.teams[0], awayTeam: team, goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[0].players.last!), at: 4)
-            }
-        }
+        games.append(Game(id: 0, isSimulated: false, homeTeam: teamsModel.teams[0], awayTeam: teamsModel.teams[2], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[0].players.last!))
+        games.append(Game(id: 1, isSimulated: false, homeTeam: teamsModel.teams[3], awayTeam: teamsModel.teams[1], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[3].players.last!))
+        games.append(Game(id: 2, isSimulated: false, homeTeam: teamsModel.teams[1], awayTeam: teamsModel.teams[0], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[1].players.last!))
+        games.append(Game(id: 3, isSimulated: false, homeTeam: teamsModel.teams[2], awayTeam: teamsModel.teams[3], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[2].players.last!))
+        games.append(Game(id: 4, isSimulated: false, homeTeam: teamsModel.teams[0], awayTeam: teamsModel.teams[3], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[0].players.last!))
+        games.append(Game(id: 5, isSimulated: false, homeTeam: teamsModel.teams[1], awayTeam: teamsModel.teams[2], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[1].players.last!))
         
         // All teams should play home/away atleast once against each contestant, so we reverse the previous
         /* [TURNED OFF] - This is not part of the instructions because it is the group stage
@@ -58,21 +53,14 @@ final class OverviewModel: NSObject {
         }*/
     }
     
-    private func reverseTeamsFor(game: Game) -> Game {
-        return Game(isSimulated: false, homeTeam: game.awayTeam, awayTeam: game.homeTeam, goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: game.awayTeam.players.last!)
-    }
-    
-    public func simulateGame(game: inout Game) {
-        nextTurn(game: &game)
-        
-        //TODO: - Game finished simulating, show results/turns
-        game.isSimulated = true
-        print("Game finished! Total score is \(game.goalsHome)-\(game.goalsAway)")
+    public func simulateGameWith(id: Int) {
+        nextTurnForGameWith(id: id)
     }
     
     
-    private func nextTurn(game: inout Game) {
+    private func nextTurnForGameWith(id: Int) {
         //TODO: - Simulate a turn
+        var game = games[id]
         
         // First move of the second half, the goalkeeper should start with the ball (might create actual kick-off later on
         if game.turns.count == (numberOfTurns / 2) {
@@ -135,7 +123,8 @@ final class OverviewModel: NSObject {
             }
             
             guard posibleTeammates.count > 0 else {
-                nextTurn(game: &game)
+                games[id] = game
+                nextTurnForGameWith(id: id)
                 return
             }
             
@@ -259,12 +248,18 @@ final class OverviewModel: NSObject {
                 game.ballHolder = receivingEnemy
                 game.holdingTeam = game.holdingTeam == .home ? .away : .home
             }
-            
         }
+        
+        games[id] = game
         
         // If game still has turns left, simulate next turn!
         if game.turns.count != numberOfTurns {
-            nextTurn(game: &game)
+            nextTurnForGameWith(id: id)
+        } else {
+            //TODO: - Game finished simulating, show results/turns
+            games[id].isSimulated = true
+            print("Game finished! Total score is \(game.goalsHome)-\(game.goalsAway)")
+            gameWasSimulatedEvent.emit()
         }
     }
     
@@ -282,6 +277,7 @@ final class OverviewModel: NSObject {
 }
 
 struct Game {
+    var id: Int
     var isSimulated: Bool = false
     let homeTeam: TeamModel
     let awayTeam: TeamModel
