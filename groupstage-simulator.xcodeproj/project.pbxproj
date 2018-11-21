@@ -26,6 +26,7 @@
 		4662019B21A30ECA0041FE63 /* TeamsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019A21A30ECA0041FE63 /* TeamsViewController.swift */; };
 		4662019D21A3100A0041FE63 /* TeamsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019C21A3100A0041FE63 /* TeamsModel.swift */; };
 		466201A021A310B70041FE63 /* TeamsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019F21A310B70041FE63 /* TeamsView.swift */; };
+		46CDC1F121A61E8700ED383A /* PlayerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46CDC1F021A61E8700ED383A /* PlayerModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		4662019A21A30ECA0041FE63 /* TeamsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsViewController.swift; sourceTree = "<group>"; };
 		4662019C21A3100A0041FE63 /* TeamsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsModel.swift; sourceTree = "<group>"; };
 		4662019F21A310B70041FE63 /* TeamsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsView.swift; sourceTree = "<group>"; };
+		46CDC1F021A61E8700ED383A /* PlayerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,6 +148,7 @@
 			children = (
 				4662019C21A3100A0041FE63 /* TeamsModel.swift */,
 				13D0358521A55B5B00F7D7DD /* OverviewModel.swift */,
+				46CDC1F021A61E8700ED383A /* PlayerModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -259,6 +262,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46CDC1F121A61E8700ED383A /* PlayerModel.swift in Sources */,
 				4662018321A3032F0041FE63 /* RootViewController.swift in Sources */,
 				4662018121A3032F0041FE63 /* AppDelegate.swift in Sources */,
 				4662019D21A3100A0041FE63 /* TeamsModel.swift in Sources */,

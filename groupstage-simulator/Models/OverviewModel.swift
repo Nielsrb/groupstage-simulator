@@ -166,8 +166,8 @@ final class OverviewModel: NSObject {
             
             // Now we know what player the current holder is passing to, we can calculate how much chance the player has in succeeding this.
             // A pass starts with a chance based on the players power (5-15), bases on the following conditions, this can go up/down.
-            //   - Enemy teammates close to the player you are passing to. (Lowers the chance (1-5%). The further, the less effective.)
-            //   - Friendly teammates close to the player you are passing to. (Increases the chance (1-7.5%). The further, the less effective.)
+            //   - Enemy teammates close to the player you are passing to. (Lowers the chance (1-5). The further away, the less effective.)
+            //   - Friendly teammates close to the player you are passing to. (Increases the chance (1-7.5). The further away, the less effective.)
             let baseChance = 5 + ((10 / 50) * (game.ballHolder.power - 50))
             var chances = [Double(baseChance)]
             
