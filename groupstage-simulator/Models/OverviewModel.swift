@@ -74,7 +74,7 @@ final class OverviewModel: NSObject {
             }
         }
         
-        // Player is a forwarder, should shoot on goal
+        // Player is a forwarder, player should shoot on goal
         if game.ballHolder.position.1 == 3 {
             var goalChance: Double = 60
             
@@ -96,6 +96,21 @@ final class OverviewModel: NSObject {
                     game.goalsAway += 1
                 }
                 goal = true
+                
+                var teamIndex: Int = 0
+                for (index, team) in TeamsModel.shared.teams.enumerated() {
+                    if team == (game.holdingTeam == .home ? game.homeTeam : game.awayTeam) {
+                        teamIndex = index
+                        break
+                    }
+                }
+                
+                for (index, player) in TeamsModel.shared.teams[teamIndex].players.enumerated() {
+                    if player == game.ballHolder {
+                        TeamsModel.shared.teams[teamIndex].players[index].goals += 1
+                        break
+                    }
+                }
                 
                 print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) scored! The score now stands \(game.goalsHome)-\(game.goalsAway)")
             } else {

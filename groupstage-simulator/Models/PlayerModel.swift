@@ -22,6 +22,7 @@ struct PlayerModel: Equatable {
     var headPower: Int = 0
     var speed: Int = 0
     var position: (Int, Int) = (0, 0)
+    var goals: Int = 0
     
     var power: Int {
         get { return (kickPower + headPower + speed) / 3 }

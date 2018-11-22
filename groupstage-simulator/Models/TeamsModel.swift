@@ -106,7 +106,7 @@ final class TeamsModel: NSObject {
 struct TeamModel: Equatable {
     let name: String
     let formation: Formations
-    let players: [PlayerModel]
+    var players: [PlayerModel]
     let power: Int
     var played: Int
     var points: Int

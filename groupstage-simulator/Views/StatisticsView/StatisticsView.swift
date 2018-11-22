@@ -14,7 +14,7 @@ final class StatisticsView: View {
     let contentView = UIScrollView()
     let gamesView = UIView()
     
-    let rowHeight: CGFloat = 30
+    let rowHeight: CGFloat = 50
     let padding: CGFloat = 10
     let labelWidth: CGFloat = 25
     let fontSize: CGFloat = 14
@@ -25,17 +25,20 @@ final class StatisticsView: View {
         super.init(frame: frame)
         
         contentView.frame = bounds
+        contentView.contentInset.top = padding
         addSubview(contentView)
         
         backgroundColor = .white
         
-        let header = UIView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: 50))
+        let header = UIView(frame: CGRect(x: padding, y: 0, width: frame.size.width - (padding*2), height: 50))
         header.backgroundColor = Colors.blue.UI
+        header.layer.cornerRadius = 4
+        header.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         contentView.addSubview(header)
         
-        header.addSubview(designRow(frame: header.bounds, name: "Club", played: "Pld", points: "Pts", balance: "Gd", goals: "Gf", goalsAgainst: "Ga", isHeader: true))
+        header.addSubview(designRow(frame: header.bounds, name: "Club", played: "Pld", points: "Pts", balance: "Gd", goals: "Gf", goalsAgainst: "Ga", isHeader: true, hasLine: false))
         
-        gamesView.frame = CGRect(x: 0, y: header.frame.size.height, width: frame.size.width, height: frame.size.height - header.frame.size.height)
+        gamesView.frame = CGRect(x: padding, y: header.frame.size.height, width: frame.size.width - (padding*2), height: frame.size.height - header.frame.size.height)
         contentView.addSubview(gamesView)
     }
     
@@ -69,19 +72,66 @@ final class StatisticsView: View {
         
         var yPos: CGFloat = 0
         for (index, team) in filteredTeams.enumerated() {
-            let row = designRow(frame: CGRect(x: 0, y: yPos, width: gamesView.frame.size.width, height: rowHeight), name: team.name, played: "\(team.played)", points: "\(team.points)", balance: "\(team.goals - team.goalsAgainst)", goals: "\(team.goals)", goalsAgainst: "\(team.goalsAgainst)")
+            let row = designRow(frame: CGRect(x: 0, y: yPos, width: gamesView.frame.size.width, height: rowHeight), name: team.name, played: "\(team.played)", points: "\(team.points)", balance: "\(team.goals - team.goalsAgainst)", goals: "\(team.goals)", goalsAgainst: "\(team.goalsAgainst)", hasLine: index != filteredTeams.count - 1)
             gamesView.addSubview(row)
             
+            // When the group stage is finished, show what team passed by giving them a golden background.
             if groupStageFinished, index < 2 {
                 row.backgroundColor = Colors.gold.UI
+            } else {
+                row.backgroundColor = Colors.lightGray.UI
+            }
+            
+            if index == filteredTeams.count - 1 {
+                row.layer.cornerRadius = 4
+                row.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
             }
             
             yPos += rowHeight
         }
-        //gamesView.frame.size.height = 
+        
+        yPos += 50
+        
+        // Some extra information about the group stage.
+        //  - Topscorer
+        //  - Most assists (optional)
+        //  - Most saves, goalkeeper (optional)
+        var allPlayers: [PlayerModel] = []
+        for team in TeamsModel.shared.teams {
+            for player in team.players {
+                allPlayers.append(player)
+            }
+        }
+        
+        let sortedPlayers = allPlayers.sorted(by: { $0.goals > $1.goals } )
+        if let topScorer = sortedPlayers.first {
+            let view = UIView(frame: CGRect(x: 0, y: yPos, width: gamesView.frame.size.width, height: rowHeight))
+            view.backgroundColor = Colors.lightGray.UI
+            view.layer.cornerRadius = 4
+            gamesView.addSubview(view)
+            
+            let goalLabel = UILabel(frame: CGRect(x: view.frame.size.width - 40 - padding, y: (view.frame.size.height - 40) / 2, width: 40, height: 40))
+            goalLabel.text = "\(topScorer.goals)"
+            goalLabel.textColor = .white
+            goalLabel.textAlignment = .center
+            goalLabel.backgroundColor = Colors.blue.UI
+            goalLabel.font = UIFont.boldSystemFont(ofSize: fontSize)
+            goalLabel.layer.cornerRadius = goalLabel.frame.size.height / 2
+            goalLabel.clipsToBounds = true
+            view.addSubview(goalLabel)
+            
+            let nameLabel = UILabel(frame: CGRect(x: padding, y: 0, width: view.frame.size.width - goalLabel.frame.size.width - (padding*2), height: view.frame.size.height))
+            nameLabel.text = "Most goals: \(topScorer.lastName)"
+            nameLabel.textColor = .black
+            nameLabel.textAlignment = .left
+            nameLabel.font = UIFont.systemFont(ofSize: fontSize)
+            view.addSubview(nameLabel)
+        }
+        
+        gamesView.frame.size.height = yPos + padding
     }
     
-    private func designRow(frame: CGRect, name: String, played: String, points: String, balance: String, goals: String, goalsAgainst: String, isHeader: Bool = false) -> UIView {
+    private func designRow(frame: CGRect, name: String, played: String, points: String, balance: String, goals: String, goalsAgainst: String, isHeader: Bool = false, hasLine: Bool = true) -> UIView {
         let row = UIView(frame: frame)
         
         let textColor: UIColor = isHeader ? .white : .black
@@ -128,6 +178,12 @@ final class StatisticsView: View {
         club.textAlignment = .left
         club.font = font
         row.addSubview(club)
+        
+        if hasLine {
+            let line = UIView(frame: CGRect(x: padding, y: frame.size.height - 1, width: frame.size.width - padding, height: 1))
+            line.backgroundColor = Colors.darkGray.UI
+            row.addSubview(line)
+        }
         
         return row
     }
