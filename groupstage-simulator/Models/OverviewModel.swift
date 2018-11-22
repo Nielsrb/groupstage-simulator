@@ -134,48 +134,48 @@ final class OverviewModel: NSObject {
             // Posible teammates, all players the current ball holder is currently able to pass to.
             // .0 = PlayerModel
             // .1 = Double, represents the amount of chance points someone has.
-            var posibleTeammates = teamMates.compactMap { player -> (PlayerModel, Double)? in
+            var possibleTeammates = teamMates.compactMap { player -> (PlayerModel, Double)? in
                 if player.position.1 == yPosCurrentGrid + 1 {
                     return (player, 100)
                 }
                 return nil
             }
             
-            guard posibleTeammates.count > 0 else {
+            guard possibleTeammates.count > 0 else {
                 games[id] = game
                 nextTurnForGameWith(id: id)
                 return
             }
             
             // We should know the weakest posible teammate, the other teammates should get extra chance points
-            let lowestPower = posibleTeammates.compactMap { teammate -> Int in
+            let lowestPower = possibleTeammates.compactMap { teammate -> Int in
                 return teammate.0.power
             }.min() ?? 50
             
-            for (index, teammate) in posibleTeammates.enumerated() {
+            for (index, teammate) in possibleTeammates.enumerated() {
                 // Add the +2.5 for each point stronger than the weakest player
                 let powerDifference = teammate.0.power - lowestPower
-                posibleTeammates[index].1 += Double(powerDifference) * 2.5
+                possibleTeammates[index].1 += Double(powerDifference) * 2.5
                 
                 // Decrease the -5 for each grid further away from the current ball holder
                 var gridDifference = yPosCurrentGrid - teammate.0.position.1
                 if gridDifference < 0 {
                     gridDifference = -gridDifference
                 }
-                posibleTeammates[index].1 -= Double(gridDifference) * 7.5
+                possibleTeammates[index].1 -= Double(gridDifference) * 7.5
             }
             
             // Now that we calculated the chances, lets see to what player the current ball holder will pass to.
             // First we need to know what the total amount of 'chance points' they have.
             var totalTeammatesChance: Double = 0
-            for teammate in posibleTeammates {
+            for teammate in possibleTeammates {
                 totalTeammatesChance += teammate.1
             }
             
             let randomTeammatesChanceValue = Double.random(in: 0 ..< totalTeammatesChance)
             var checkedTeammatesChance: Double = 0
-            var chosenTeammate: PlayerModel = posibleTeammates.first!.0
-            for teammate in posibleTeammates {
+            var chosenTeammate: PlayerModel = possibleTeammates.first!.0
+            for teammate in possibleTeammates {
                 if randomTeammatesChanceValue < checkedTeammatesChance + teammate.1 {
                     chosenTeammate = teammate.0
                 } else {
@@ -191,11 +191,9 @@ final class OverviewModel: NSObject {
             //   - Make the pass possible to be a high/far shot as well, in this case instead of comparing Power, compare headPower or speedPower.
             
             // Now we know what player the current holder is passing to, we can now calculate how much chance the player has in succeeding this pass.
-            // A pass starts with a chance based on the players power (5-10), bases on the following conditions, this can go up/down.
-            //   - Enemy teammates close to the player you are passing to. (Lowers the chance (1-5). The further away, the less effective.)
-            //   - Friendly teammates close to the player you are passing to. (Increases the chance (1-7.5). The further away, the less effective.)
-            let baseChance = max(min(5 + ((10 / 50) * (game.ballHolder.power - 50)), 10), 5)
-            var chances = [Double(baseChance)]
+            //  - The person receiving the ball, and possibliy the enemy on the same grid use full power when defending.
+            //  - Each teammate and enemy in the same row can support their teammate with receiving/intercepting the ball, yet the further away they are, the less effective they help.
+            var chances: [Double] = []
             
             // We have to know what enemies are able to intercept the pass.
             let yPosEnemies = 4 - chosenTeammate.position.1
@@ -206,36 +204,28 @@ final class OverviewModel: NSObject {
                 return nil
             }
             
-            // Removing itself from posible teammates to only keep the players capable of supporting him
-            let supportTeammates = posibleTeammates.compactMap { player -> (PlayerModel, Double)? in
-                if player.0 != chosenTeammate {
-                    return player
-                }
-                return nil
-            }
-            
             // When there are no enemies, pass succesion should be 100% (this should not be possible right now).
             if enemies.count == 0 {
                 chances[0] = 100
                 print("ERROR")
             } else {
-                // Calculate the chances for each supporting teammate (1-5)
-                for teammate in supportTeammates {
+                // Calculate the power for each supporting teammate and ball receiver
+                for teammate in possibleTeammates {
                     var gridDifference = chosenTeammate.position.0 - teammate.0.position.0
                     if gridDifference < 0 {
                         gridDifference = -gridDifference
                     }
-                    let chance = max(1, 6 - gridDifference) // 6 instead of 5 because a teammate could never be on the same x-pos on the grid
-                    chances.append(Double(chance))
+                    let chance = max(10, Double(teammate.0.power) * max(0.1, 1 - (Double(gridDifference) * 0.1))) // -10% power per grid
+                    chances.append(chance)
                 }
                 
-                // Calculate the chances for each enemy (1-7.5)
+                // Calculate the power for each enemy
                 for enemy in enemies {
                     var gridDifference = chosenTeammate.position.0 - enemy.position.0
                     if gridDifference < 0 {
                         gridDifference = -gridDifference
                     }
-                    let chance = max(1.0, 7.5 - Double(gridDifference))
+                    let chance = max(10, Double(enemy.power) * max(0.1, 1 - (Double(gridDifference) * 0.1))) // -10% power per grid
                     chances.append(chance)
                 }
             }
@@ -252,8 +242,8 @@ final class OverviewModel: NSObject {
             if randomChanceValue < chances[0] {
                 passSucceeded = true
             } else {
-                if supportTeammates.count > 0 {
-                    for i in 1 ... supportTeammates.count { // -1 for the person who is receiving the ball (can't acces supportedTeammates from here)
+                if possibleTeammates.count > 0 {
+                    for i in 0 ..< possibleTeammates.count {
                         if randomChanceValue < checkedChance + chances[i] {
                             passSucceeded = true
                         } else {
