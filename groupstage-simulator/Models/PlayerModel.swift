@@ -11,7 +11,7 @@ import UIKit
 
 private let playerFirstNames = ["Robert", "Bill", "Evan", "Richard", "Pepper", "Mauro", "Lucas", "Niels"]
 private let playerLastNames = ["Wood", "Shizuke", "Mulder", "Ndidi", "Lee", "San Giorgi", "van der Sloot"]
-private let playerNames: [String] = []
+private var playerNames: [String] = []
 
 struct PlayerModel: Equatable {
     var firstName: String = ""
@@ -93,6 +93,7 @@ struct PlayerModel: Equatable {
             return generatePlayerName()
         }
         
+        playerNames.append(fullName)
         return (firstName: firstName, lastName: lastName)
     }
 }
