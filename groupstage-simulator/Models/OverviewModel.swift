@@ -288,14 +288,16 @@ final class OverviewModel: NSObject {
             gameWasSimulatedEvent.emit(id)
             
             for (index, team) in TeamsModel.shared.teams.enumerated() {
-                if team == game.homeTeam {
+                if team.name == game.homeTeam.name {
                     TeamsModel.shared.teams[index].goals += game.goalsHome
                     TeamsModel.shared.teams[index].goalsAgainst += game.goalsAway
                     TeamsModel.shared.teams[index].points += game.goalsAway > game.goalsHome ? 0 : game.goalsHome == game.goalsAway ? 1 : 3
-                } else if team == game.awayTeam {
+                    TeamsModel.shared.teams[index].played += 1
+                } else if team.name == game.awayTeam.name {
                     TeamsModel.shared.teams[index].goals += game.goalsAway
                     TeamsModel.shared.teams[index].goalsAgainst += game.goalsHome
                     TeamsModel.shared.teams[index].points += game.goalsAway > game.goalsHome ? 3 : game.goalsHome == game.goalsAway ? 1 : 0
+                    TeamsModel.shared.teams[index].played += 1
                 }
             }
         }

@@ -53,7 +53,7 @@ final class TeamsModel: NSObject {
         let players = generatePlayerModels(formation: formation, handicap: handicap)
         let power = teamPowerFor(players: players)
         
-        return TeamModel(name: teamName, formation: formation, players: players, power: power, points: 0, goals: 0, goalsAgainst: 0)
+        return TeamModel(name: teamName, formation: formation, players: players, power: power, played: 0, points: 0, goals: 0, goalsAgainst: 0)
     }
     
     // Generate a player, random names and power
@@ -108,6 +108,7 @@ struct TeamModel: Equatable {
     let formation: Formations
     let players: [PlayerModel]
     let power: Int
+    var played: Int
     var points: Int
     var goals: Int
     var goalsAgainst: Int

@@ -14,11 +14,12 @@ final class StatisticsView: View {
     let contentView = UIScrollView()
     let gamesView = UIView()
     
+    let rowHeight: CGFloat = 30
     let padding: CGFloat = 10
     let labelWidth: CGFloat = 25
     let fontSize: CGFloat = 14
     
-    var games = OverviewModel.shared.games
+    let model = TeamsModel.shared
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -32,47 +33,10 @@ final class StatisticsView: View {
         header.backgroundColor = Colors.blue.UI
         contentView.addSubview(header)
         
-        let goalBalance = UILabel(frame: CGRect(x: header.frame.size.width - labelWidth - padding, y: 0, width: labelWidth, height: header.frame.size.height))
-        goalBalance.text = "Gd"
-        goalBalance.textColor = .white
-        goalBalance.textAlignment = .center
-        goalBalance.font = UIFont.boldSystemFont(ofSize: fontSize)
-        header.addSubview(goalBalance)
+        header.addSubview(designRow(frame: header.bounds, name: "Club", played: "Pld", points: "Pts", balance: "Gd", goals: "Gf", goalsAgainst: "Ga", isHeader: true))
         
-        let goalsAgainst = UILabel(frame: CGRect(x: goalBalance.frame.origin.x - labelWidth - padding, y: 0, width: labelWidth, height: header.frame.size.height))
-        goalsAgainst.text = "Ga"
-        goalsAgainst.textColor = .white
-        goalsAgainst.textAlignment = .center
-        goalsAgainst.font = UIFont.boldSystemFont(ofSize: fontSize)
-        header.addSubview(goalsAgainst)
-        
-        let goalsFor = UILabel(frame: CGRect(x: goalsAgainst.frame.origin.x - labelWidth - padding, y: 0, width: labelWidth, height: header.frame.size.height))
-        goalsFor.text = "Gf"
-        goalsFor.textColor = .white
-        goalsFor.textAlignment = .center
-        goalsFor.font = UIFont.boldSystemFont(ofSize: fontSize)
-        header.addSubview(goalsFor)
-        
-        let points = UILabel(frame: CGRect(x: goalsFor.frame.origin.x - labelWidth - padding, y: 0, width: labelWidth, height: header.frame.size.height))
-        points.text = "Pts"
-        points.textColor = .white
-        points.textAlignment = .center
-        points.font = UIFont.boldSystemFont(ofSize: fontSize)
-        header.addSubview(points)
-        
-        let played = UILabel(frame: CGRect(x: points.frame.origin.x - labelWidth - padding, y: 0, width: labelWidth, height: header.frame.size.height))
-        played.text = "Pld"
-        played.textColor = .white
-        played.textAlignment = .center
-        played.font = UIFont.boldSystemFont(ofSize: fontSize)
-        header.addSubview(played)
-        
-        let club = UILabel(frame: CGRect(x: padding, y: 0, width: header.frame.size.width - padding - played.frame.origin.x, height: header.frame.size.height))
-        club.text = "Club"
-        club.textColor = .white
-        club.textAlignment = .left
-        club.font = UIFont.boldSystemFont(ofSize: fontSize)
-        header.addSubview(club)
+        gamesView.frame = CGRect(x: 0, y: header.frame.size.height, width: frame.size.width, height: frame.size.height - header.frame.size.height)
+        contentView.addSubview(gamesView)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -80,8 +44,6 @@ final class StatisticsView: View {
     }
     
     public func reloadData() {
-        games = OverviewModel.shared.games
-        
         designView()
     }
     
@@ -89,6 +51,84 @@ final class StatisticsView: View {
         // Clear current data
         gamesView.subviews.forEach { $0.removeFromSuperview() }
         
+        // Sorting teams by:
+        //  - Goals against
+        //  - Goals
+        //  - Goal balance
+        //  - Points
+        var filteredTeams = model.teams.sorted(by: { $0.goalsAgainst < $1.goalsAgainst } )
+        filteredTeams = filteredTeams.sorted(by: { $0.goals > $1.goals } )
+        filteredTeams = filteredTeams.sorted(by:  { ($0.goals - $0.goalsAgainst) > ($1.goals - $1.goalsAgainst) } )
+        filteredTeams = filteredTeams.sorted(by: { $0.points > $1.points } )
         
+        guard let lastGame = OverviewModel.shared.games.last else {
+            return
+        }
+        
+        let groupStageFinished = lastGame.isSimulated
+        
+        var yPos: CGFloat = 0
+        for (index, team) in filteredTeams.enumerated() {
+            let row = designRow(frame: CGRect(x: 0, y: yPos, width: gamesView.frame.size.width, height: rowHeight), name: team.name, played: "\(team.played)", points: "\(team.points)", balance: "\(team.goals - team.goalsAgainst)", goals: "\(team.goals)", goalsAgainst: "\(team.goalsAgainst)")
+            gamesView.addSubview(row)
+            
+            if groupStageFinished, index < 2 {
+                row.backgroundColor = Colors.gold.UI
+            }
+            
+            yPos += rowHeight
+        }
+        //gamesView.frame.size.height = 
+    }
+    
+    private func designRow(frame: CGRect, name: String, played: String, points: String, balance: String, goals: String, goalsAgainst: String, isHeader: Bool = false) -> UIView {
+        let row = UIView(frame: frame)
+        
+        let textColor: UIColor = isHeader ? .white : .black
+        let font: UIFont = isHeader ? UIFont.boldSystemFont(ofSize: fontSize) : UIFont.systemFont(ofSize: fontSize)
+        
+        let goalBalanceLabel = UILabel(frame: CGRect(x: frame.size.width - labelWidth - padding, y: 0, width: labelWidth, height: frame.size.height))
+        goalBalanceLabel.text = balance
+        goalBalanceLabel.textColor = textColor
+        goalBalanceLabel.textAlignment = .center
+        goalBalanceLabel.font = font
+        row.addSubview(goalBalanceLabel)
+        
+        let goalsAgainstLabel = UILabel(frame: CGRect(x: goalBalanceLabel.frame.origin.x - labelWidth - padding, y: 0, width: labelWidth, height: frame.size.height))
+        goalsAgainstLabel.text = goalsAgainst
+        goalsAgainstLabel.textColor = textColor
+        goalsAgainstLabel.textAlignment = .center
+        goalsAgainstLabel.font = font
+        row.addSubview(goalsAgainstLabel)
+        
+        let goalsForLabel = UILabel(frame: CGRect(x: goalsAgainstLabel.frame.origin.x - labelWidth - padding, y: 0, width: labelWidth, height: frame.size.height))
+        goalsForLabel.text = goals
+        goalsForLabel.textColor = textColor
+        goalsForLabel.textAlignment = .center
+        goalsForLabel.font = font
+        row.addSubview(goalsForLabel)
+        
+        let pointsLabel = UILabel(frame: CGRect(x: goalsForLabel.frame.origin.x - labelWidth - padding, y: 0, width: labelWidth, height: frame.size.height))
+        pointsLabel.text = points
+        pointsLabel.textColor = textColor
+        pointsLabel.textAlignment = .center
+        pointsLabel.font = font
+        row.addSubview(pointsLabel)
+        
+        let playedLabel = UILabel(frame: CGRect(x: pointsLabel.frame.origin.x - labelWidth - padding, y: 0, width: labelWidth, height: frame.size.height))
+        playedLabel.text = played
+        playedLabel.textColor = textColor
+        playedLabel.textAlignment = .center
+        playedLabel.font = font
+        row.addSubview(playedLabel)
+        
+        let club = UILabel(frame: CGRect(x: padding, y: 0, width: frame.size.width - padding - playedLabel.frame.origin.x, height: frame.size.height))
+        club.text = name
+        club.textColor = textColor
+        club.textAlignment = .left
+        club.font = font
+        row.addSubview(club)
+        
+        return row
     }
 }

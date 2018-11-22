@@ -15,7 +15,7 @@ final class OverviewView: View {
     let cellHeight: CGFloat = 70
     let padding: CGFloat = 10
     
-    var model = OverviewModel.shared
+    let model = OverviewModel.shared
     
     override init(frame: CGRect) {
         super.init(frame: frame)
