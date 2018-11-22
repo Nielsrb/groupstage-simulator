@@ -15,7 +15,7 @@ final class OverviewModel: NSObject {
     var games: [Game] = []
     var currentGame: Game?
     
-    let numberOfTurns: Int = 30
+    let numberOfTurns: Int = 40
     
     let gameWasSimulatedEvent = Event<Void>()
     
@@ -191,8 +191,9 @@ final class OverviewModel: NSObject {
             // When there are no enemies, pass succesion should be 100% (this should not be possible right now).
             if enemies.count == 0 {
                 chances[0] = 100
+                print("ERROR")
             } else {
-                // Calculate the chances for each supporting teammate (1-5%)
+                // Calculate the chances for each supporting teammate (1-5)
                 for teammate in supportTeammates {
                     var gridDifference = chosenTeammate.position.0 - teammate.0.position.0
                     if gridDifference < 0 {
@@ -202,7 +203,7 @@ final class OverviewModel: NSObject {
                     chances.append(Double(chance))
                 }
                 
-                // Calculate the chances for each enemy (1-7.5%)
+                // Calculate the chances for each enemy (1-7.5)
                 for enemy in enemies {
                     var gridDifference = chosenTeammate.position.0 - enemy.position.0
                     if gridDifference < 0 {
@@ -227,7 +228,7 @@ final class OverviewModel: NSObject {
             } else {
                 if supportTeammates.count > 0 {
                     for i in 1 ... supportTeammates.count { // -1 for the person who is receiving the ball (can't acces supportedTeammates from here)
-                        if checkedChance + chances[i] < randomChanceValue {
+                        if randomChanceValue < checkedChance + chances[i] {
                             passSucceeded = true
                         } else {
                             checkedChance += chances[i]
