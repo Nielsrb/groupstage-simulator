@@ -55,11 +55,11 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return cellHeight
+        return 50
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: cellHeight))
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50))
         view.backgroundColor = Colors.blue.UI
         
         let game = model.games[section]
@@ -68,18 +68,21 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
         versusLabel.text = "vs"
         versusLabel.textColor = .white
         versusLabel.textAlignment = .center
+        versusLabel.font = UIFont.boldSystemFont(ofSize: 18)
         view.addSubview(versusLabel)
         
         let homeLabel = UILabel(frame: CGRect(x: padding, y: 0, width: (view.frame.size.width / 2) - (padding*2) - (versusLabel.frame.size.width / 2), height: view.frame.size.height))
         homeLabel.text = game.homeTeam.name
         homeLabel.textColor = .white
         homeLabel.textAlignment = .left
+        homeLabel.font = UIFont.boldSystemFont(ofSize: 18)
         view.addSubview(homeLabel)
         
         let awayLabel = UILabel(frame: CGRect(x: (view.frame.size.width / 2) + (versusLabel.frame.size.width / 2) + padding, y: 0, width: (view.frame.size.width / 2) - (padding*2) - (versusLabel.frame.size.width / 2), height: view.frame.size.height))
         awayLabel.text = game.awayTeam.name
         awayLabel.textColor = .white
         awayLabel.textAlignment = .right
+        awayLabel.font = UIFont.boldSystemFont(ofSize: 18)
         view.addSubview(awayLabel)
         
         return view

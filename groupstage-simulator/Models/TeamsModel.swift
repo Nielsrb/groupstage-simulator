@@ -13,8 +13,8 @@ final class TeamsModel: NSObject {
     
     static let shared = TeamsModel()
     
-    private let teamFirstNames = ["Real", "SC", "FC", "Atletico"]
-    private let teamLastNames = ["Cambuur", "Madrid", "Hotspur", "Zoetermeer", "Barcelona", "London", "Amsterdam", "Kaapstad"]
+    private let teamFirstNames = ["Real", "SC", "FC", "Atletico", "Youth"]
+    private let teamLastNames = ["Cambuur", "Madrid", "Hotspur", "Zoetermeer", "Barcelona", "London", "Amsterdam", "Kaapstad", "Rotterdam", "Groningen", "Lelystad"]
     
     var teams: [TeamModel] = []
     
@@ -53,7 +53,7 @@ final class TeamsModel: NSObject {
         let players = generatePlayerModels(formation: formation, handicap: handicap)
         let power = teamPowerFor(players: players)
         
-        return TeamModel(name: teamName, formation: formation, players: players, power: power)
+        return TeamModel(name: teamName, formation: formation, players: players, power: power, points: 0, goals: 0, goalsAgainst: 0)
     }
     
     // Generate a player, random names and power
@@ -103,11 +103,14 @@ final class TeamsModel: NSObject {
     }
 }
 
-struct TeamModel {
+struct TeamModel: Equatable {
     let name: String
     let formation: Formations
     let players: [PlayerModel]
     let power: Int
+    var points: Int
+    var goals: Int
+    var goalsAgainst: Int
 }
 
 public enum Formations: String {

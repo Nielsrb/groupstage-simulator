@@ -83,7 +83,7 @@ final class OverviewModel: NSObject {
             let enemyPower = game.holdingTeam == .home ? game.awayTeam.players.last!.power : game.homeTeam.players.last!.power
             let difference: Double = Double(playerPower - enemyPower)
             
-            goalChance = max(min(goalChance + (difference*1.5), 95), 10) // 1.5% goal chance +- per power level difference, with a maximum of 95% chance, and a minimum of 10% chance.
+            goalChance = max(min(goalChance + (difference*1.5), 95), 10) // +-1.5% goal chance per power level difference, with a maximum of 95% chance, and a minimum of 10% chance.
             
             let randomValue = Int.random(in: 0...100)
             
@@ -286,6 +286,18 @@ final class OverviewModel: NSObject {
             games[id].isSimulated = true
             print("Game finished! Total score is \(game.goalsHome)-\(game.goalsAway)")
             gameWasSimulatedEvent.emit(id)
+            
+            for (index, team) in TeamsModel.shared.teams.enumerated() {
+                if team == game.homeTeam {
+                    TeamsModel.shared.teams[index].goals += game.goalsHome
+                    TeamsModel.shared.teams[index].goalsAgainst += game.goalsAway
+                    TeamsModel.shared.teams[index].points += game.goalsAway > game.goalsHome ? 0 : game.goalsHome == game.goalsAway ? 1 : 3
+                } else if team == game.awayTeam {
+                    TeamsModel.shared.teams[index].goals += game.goalsAway
+                    TeamsModel.shared.teams[index].goalsAgainst += game.goalsHome
+                    TeamsModel.shared.teams[index].points += game.goalsAway > game.goalsHome ? 3 : game.goalsHome == game.goalsAway ? 1 : 0
+                }
+            }
         }
     }
     

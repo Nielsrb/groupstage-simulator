@@ -26,4 +26,10 @@ final class StatisticsViewController: UIViewController, Controller {
     override func viewDidLoad() {
         view.addSubview(controllerView)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if let view = controllerView as? StatisticsView {
+            view.reloadData()
+        }
+    }
 }
