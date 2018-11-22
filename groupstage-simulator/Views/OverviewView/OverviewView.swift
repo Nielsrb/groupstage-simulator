@@ -185,6 +185,7 @@ private class GameCell: UITableViewCell {
     }
     
     @objc private func playButtonPressed() {
+        // TODO: - View should not talk directly with the models, Controller should be inbetween.
         OverviewModel.shared.simulateGameWith(id: playButton.tag)
     }
 }
