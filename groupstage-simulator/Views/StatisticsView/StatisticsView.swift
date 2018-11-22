@@ -90,12 +90,16 @@ final class StatisticsView: View {
             yPos += rowHeight
         }
         
-        yPos += 50
+        yPos += 30
         
         // Some extra information about the group stage.
         //  - Topscorer
-        //  - Most assists (optional)
-        //  - Most saves, goalkeeper (optional)
+        //  - Most assists (to be continued)
+        //  - Most saves, goalkeeper (to be continued)
+        //  - Total amount of goals
+        //  - Average goal per match
+        
+        // STAT: Topscorer
         var allPlayers: [PlayerModel] = []
         for team in TeamsModel.shared.teams {
             for player in team.players {
@@ -105,40 +109,37 @@ final class StatisticsView: View {
         
         let sortedPlayers = allPlayers.sorted(by: { $0.goals > $1.goals } )
         if let topScorer = sortedPlayers.first {
-            let view = UIView(frame: CGRect(x: 0, y: yPos, width: gamesView.frame.size.width, height: rowHeight + 25))
-            gamesView.addSubview(view)
-            
-            let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.height - rowHeight))
-            titleLabel.text = "MOST GOALS:"
-            titleLabel.textColor = .black
-            titleLabel.textAlignment = .left
-            titleLabel.font = UIFont.boldSystemFont(ofSize: fontSize)
-            view.addSubview(titleLabel)
-            
-            let content = UIView(frame: CGRect(x: 0, y: view.frame.size.height - rowHeight, width: view.frame.size.width, height: rowHeight))
-            content.backgroundColor = Colors.lightGray.UI
-            content.layer.cornerRadius = 4
-            view.addSubview(content)
-            
-            let goalLabel = UILabel(frame: CGRect(x: content.frame.size.width - 40 - padding, y: (content.frame.size.height - 40) / 2, width: 40, height: 40))
-            goalLabel.text = "\(topScorer.goals)"
-            goalLabel.textColor = .white
-            goalLabel.textAlignment = .center
-            goalLabel.backgroundColor = Colors.blue.UI
-            goalLabel.font = UIFont.boldSystemFont(ofSize: fontSize)
-            goalLabel.layer.cornerRadius = goalLabel.frame.size.height / 2
-            goalLabel.clipsToBounds = true
-            content.addSubview(goalLabel)
-            
-            let nameLabel = UILabel(frame: CGRect(x: padding, y: 0, width: content.frame.size.width - goalLabel.frame.size.width - (padding*2), height: content.frame.size.height))
-            nameLabel.text = "\(topScorer.firstName.first!). \(topScorer.lastName)"
-            nameLabel.textColor = .black
-            nameLabel.textAlignment = .left
-            nameLabel.font = UIFont.systemFont(ofSize: fontSize)
-            content.addSubview(nameLabel)
+            let stat = designStat(title: "MOST GOALS:", value: "\(topScorer.firstName.first!). \(topScorer.lastName)", amount: "\(topScorer.goals)", yPos: yPos)
+            gamesView.addSubview(stat)
+            yPos += stat.frame.size.height + 30
         }
         
+        // STAT: Total amount of goals
+        var totalAmountOfGoals: Int = 0
+        for team in TeamsModel.shared.teams {
+            totalAmountOfGoals += team.goals
+        }
+        
+        let totalGoalsStat = designStat(title: "GOALS:", value: "Total amount of goals", amount: "\(totalAmountOfGoals)", yPos: yPos)
+        gamesView.addSubview(totalGoalsStat)
+        
+        yPos += totalGoalsStat.frame.size.height + padding
+        
+        
+        // STATE: Average amount of goals per match
+        let finishedGames = OverviewModel.shared.games.filter { game in
+            return game.isSimulated
+        }
+        
+        let averageAmountOfGoals = Double(totalAmountOfGoals) / (finishedGames.count > 0 ? Double(finishedGames.count) : 1)
+        let averageAmountOfGoalsInt = Int(averageAmountOfGoals * 100) // We want a maximum of 2 decimals
+        let averageGoalsStat = designStat(title: nil, value: "Average amount of goals", amount: "\(Double(averageAmountOfGoalsInt) / 100)", yPos: yPos)
+        gamesView.addSubview(averageGoalsStat)
+        
+        yPos += averageGoalsStat.frame.size.height + 30
+        
         gamesView.frame.size.height = yPos + padding
+        contentView.contentSize = CGSize(width: contentView.frame.size.width, height: gamesView.frame.origin.y + gamesView.frame.size.height)
     }
     
     private func designRow(frame: CGRect, name: String, played: String, points: String, balance: String, goals: String, goalsAgainst: String, isHeader: Bool = false, hasLine: Bool = true) -> UIView {
@@ -196,5 +197,42 @@ final class StatisticsView: View {
         }
         
         return row
+    }
+    
+    func designStat(title: String?, value: String?, amount: String, yPos: CGFloat) -> UIView {
+        let view = UIView(frame: CGRect(x: 0, y: yPos, width: gamesView.frame.size.width, height: title == nil ? rowHeight : rowHeight + 25))
+        
+        if title != nil {
+            let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.height - rowHeight))
+            titleLabel.text = title
+            titleLabel.textColor = .black
+            titleLabel.textAlignment = .left
+            titleLabel.font = UIFont.boldSystemFont(ofSize: fontSize)
+            view.addSubview(titleLabel)
+        }
+        
+        let content = UIView(frame: CGRect(x: 0, y: view.frame.size.height - rowHeight, width: view.frame.size.width, height: rowHeight))
+        content.backgroundColor = Colors.lightGray.UI
+        content.layer.cornerRadius = 4
+        view.addSubview(content)
+        
+        let amountLabel = UILabel(frame: CGRect(x: content.frame.size.width - 40 - padding, y: (content.frame.size.height - 40) / 2, width: 40, height: 40))
+        amountLabel.text = amount
+        amountLabel.textColor = .white
+        amountLabel.textAlignment = .center
+        amountLabel.backgroundColor = Colors.blue.UI
+        amountLabel.font = UIFont.boldSystemFont(ofSize: fontSize)
+        amountLabel.layer.cornerRadius = amountLabel.frame.size.height / 2
+        amountLabel.clipsToBounds = true
+        content.addSubview(amountLabel)
+        
+        let valueLabel = UILabel(frame: CGRect(x: padding, y: 0, width: content.frame.size.width - amountLabel.frame.size.width - (padding*2), height: content.frame.size.height))
+        valueLabel.text = value
+        valueLabel.textColor = .black
+        valueLabel.textAlignment = .left
+        valueLabel.font = UIFont.systemFont(ofSize: fontSize)
+        content.addSubview(valueLabel)
+        
+        return view
     }
 }

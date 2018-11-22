@@ -42,7 +42,7 @@ final class OverviewView: View {
         }
         
         tableView.reloadRows(at: indexPaths, with: .automatic)
-        tableView.scrollToRow(at: indexPaths[0], at: .top, animated: true)
+        tableView.scrollToRow(at: indexPaths[0], at: .middle, animated: true)
     }
 }
 
@@ -85,15 +85,6 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
         awayLabel.font = UIFont.boldSystemFont(ofSize: 18)
         view.addSubview(awayLabel)
         
-        return view
-    }
-    
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 75
-    }
-    
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50))
         return view
     }
     
