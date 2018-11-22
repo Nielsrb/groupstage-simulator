@@ -77,15 +77,12 @@ final class OverviewModel: NSObject {
             let enemyPower = game.holdingTeam == .home ? game.awayTeam.players.last!.power : game.homeTeam.players.last!.power
             let difference: Double = Double(playerPower - enemyPower)
             
-            goalChance = max(goalChance + (difference*1.5), 95) // 1.5% goal chance +- per power level difference, with a maximum of 95% chance.
+            goalChance = max(min(goalChance + (difference*1.5), 95), 10) // 1.5% goal chance +- per power level difference, with a maximum of 95% chance, and a minimum of 10% chance.
             
-            let totalPower = playerPower + enemyPower
-            let goalValue = Double(totalPower) * goalChance
-            
-            let randomValue = Int.random(in: 0...totalPower)
+            let randomValue = Int.random(in: 0...100)
             
             var goal = false
-            if randomValue < Int(goalValue) {
+            if randomValue < Int(goalChance) {
                 // GOAL
                 if game.holdingTeam == .home {
                     game.goalsHome += 1
