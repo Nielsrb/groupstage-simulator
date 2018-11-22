@@ -17,16 +17,28 @@ struct PlayerModel: Equatable {
     var firstName: String = ""
     var lastName: String = ""
     var age: Int = 0
-    var power: Int = 0
+    var length: Double = 0.0
+    var kickPower: Int = 0
+    var headPower: Int = 0
+    var speed: Int = 0
     var position: (Int, Int) = (0, 0)
     
-    mutating func configure(formation: Formations, position: Int) {
+    var power: Int {
+        get { return (kickPower + headPower + speed) / 3 }
+    }
+    
+    mutating func configure(formation: Formations, position: Int, handicap: Double) {
         let names = generatePlayerName()
         self.firstName = names.firstName
         self.lastName = names.lastName
         
         self.age = Int.random(in: 18 ... 36)
-        self.power = Int.random(in: 50...100)
+        self.length = Double(Int.random(in: 150 ... 200)) / 100
+        
+        let powers = generatePlayerPower()
+        self.kickPower = Int(powers.kick * handicap)
+        self.headPower = Int(powers.head * handicap)
+        self.speed = Int(powers.speed * handicap)
         
         self.position = positionForPlayer(formation: formation, position: position)
     }
@@ -89,11 +101,30 @@ struct PlayerModel: Equatable {
         let lastName = playerLastNames[Int.random(in: 0 ..< playerLastNames.count)]
         let fullName = "\(firstName) \(lastName)"
         
+        // Making sure 2 players can NEVER have the same name
         if playerNames.contains(fullName) {
             return generatePlayerName()
         }
-        
         playerNames.append(fullName)
+        
         return (firstName: firstName, lastName: lastName)
+    }
+    
+    private func generatePlayerPower() -> (kick: Double, head: Double, speed: Double) {
+        // Heigher length is always beter
+        let lengthPower = 50 + ((length - 1.50) * 100)
+        
+        // Kick, based on length
+        let kickPower = lengthPower
+        
+        // Head, based on length
+        let headPower = lengthPower
+        
+        // Speed, based on age and length
+        let ageSpeedPower: Double = 50.0 - ((25.0 / 18.0) * (Double(age) - 18.0))
+        let speedPower = ageSpeedPower + (lengthPower / 2)
+        
+        print("age: \(age), length: \(length)")
+        return (kick: kickPower, head: headPower, speed: speedPower)
     }
 }

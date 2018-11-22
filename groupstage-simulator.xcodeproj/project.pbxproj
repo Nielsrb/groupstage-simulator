@@ -146,9 +146,9 @@
 		4662019221A30CF30041FE63 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				4662019C21A3100A0041FE63 /* TeamsModel.swift */,
 				13D0358521A55B5B00F7D7DD /* OverviewModel.swift */,
 				46CDC1F021A61E8700ED383A /* PlayerModel.swift */,
+				4662019C21A3100A0041FE63 /* TeamsModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";

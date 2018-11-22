@@ -49,7 +49,8 @@ final class TeamsModel: NSObject {
         }
         
         let formation = generateRandomFormation()
-        let players = generatePlayerModels(formation: formation)
+        let handicap = [0.75, 1.0, 1.5].randomElement()! // Handicaps are added to show the difference between team powers during the simulation
+        let players = generatePlayerModels(formation: formation, handicap: handicap)
         let power = teamPowerFor(players: players)
         
         return TeamModel(name: teamName, formation: formation, players: players, power: power)
@@ -57,12 +58,12 @@ final class TeamsModel: NSObject {
     
     // Generate a player, random names and power
     // TODO: - Players should not be able to have the same first and last name.
-    private func generatePlayerModels(formation: Formations) -> [PlayerModel] {
+    private func generatePlayerModels(formation: Formations, handicap: Double) -> [PlayerModel] {
         var players: [PlayerModel] = []
         
         for i in 0 ..< 11 {
             var player = PlayerModel()
-            player.configure(formation: formation, position: i)
+            player.configure(formation: formation, position: i, handicap: handicap)
             players.append(player)
         }
         
