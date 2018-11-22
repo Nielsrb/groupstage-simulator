@@ -17,7 +17,7 @@ final class OverviewModel: NSObject {
     
     let numberOfTurns: Int = 40
     
-    let gameWasSimulatedEvent = Event<Void>()
+    let gameWasSimulatedEvent = Event<Int>()
     
     public func generateGames() {
         let teamsModel = TeamsModel.shared
@@ -59,13 +59,19 @@ final class OverviewModel: NSObject {
     
     
     private func nextTurnForGameWith(id: Int) {
-        //TODO: - Simulate a turn
         var game = games[id]
         
-        // First move of the second half, the goalkeeper should start with the ball (might create actual kick-off later on
-        if game.turns.count == (numberOfTurns / 2) {
-            print("First half finished! Away's keeper is now ball holder")
-            game.ballHolder = game.awayTeam.players.last!
+        // First move of a half, the defenders should start with the ball (might create actual kick-off later on)
+        if game.turns.count == 0 || game.turns.count == (numberOfTurns / 2) {
+            let team = game.turns.count == 0 ? game.homeTeam : game.awayTeam
+            
+            let defenders = team.players.filter { player in
+                return player.position.1 == 1
+            }
+            
+            if let player = defenders.randomElement() {
+                game.ballHolder = player
+            }
         }
         
         // Player is a forwarder, should shoot on goal
@@ -96,12 +102,25 @@ final class OverviewModel: NSObject {
                 print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) misses!")
             }
             
-            let keeper = game.holdingTeam == .home ? game.awayTeam.players.last! : game.homeTeam.players.last!
+            var ballHolder = game.holdingTeam == .home ? game.awayTeam.players.last! : game.homeTeam.players.last!
+            let holdingTeam: Teams = game.holdingTeam == .home ? .away : .home
             
-            // Either after scroring or missing, the ball should return to the others goalkeeper (might add chance for rebound?)
-            game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: keeper, goal: goal))
-            game.ballHolder = keeper
-            game.holdingTeam = game.holdingTeam == .home ? .away : .home
+            // If goal was made, let the defenders start with the ball
+            if goal {
+                let team = holdingTeam == .home ? game.homeTeam : game.awayTeam
+                let defenders = team.players.filter { player in
+                    return player.position.1 == 1
+                }
+                
+                if let player = defenders.randomElement() {
+                    ballHolder = player
+                }
+            }
+            
+            // Either after scroring or missing, the ball should return to the others goalkeeper (might add chance for rebound?).
+            game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: ballHolder, goal: goal))
+            game.ballHolder = ballHolder
+            game.holdingTeam = holdingTeam
         } else {
             // Player is either a goalkeeper, defender or midfielder. He should try passing.
             // Player should make a decision who to pass to:
@@ -112,9 +131,9 @@ final class OverviewModel: NSObject {
             let yPosCurrentGrid = game.ballHolder.position.1
             let teamMates = game.holdingTeam == .home ? game.homeTeam.players : game.awayTeam.players
             
-            // Posible teammates, all players the current ball holder is currently able to pass to
+            // Posible teammates, all players the current ball holder is currently able to pass to.
             // .0 = PlayerModel
-            // .1 = Double, represents the amount of chance points someone has
+            // .1 = Double, represents the amount of chance points someone has.
             var posibleTeammates = teamMates.compactMap { player -> (PlayerModel, Double)? in
                 if player.position.1 == yPosCurrentGrid + 1 {
                     return (player, 100)
@@ -163,6 +182,13 @@ final class OverviewModel: NSObject {
                     checkedTeammatesChance += teammate.1
                 }
             }
+            
+            // TODO: - Rework intercepting!
+            // Total power friendly's vs total power enemy's.
+            // Lower power in % depending on distance
+            
+            // Possible features for passing/intercepting:
+            //   - Make the pass possible to be a high/far shot as well, in this case instead of comparing Power, compare headPower or speedPower.
             
             // Now we know what player the current holder is passing to, we can now calculate how much chance the player has in succeeding this pass.
             // A pass starts with a chance based on the players power (5-10), bases on the following conditions, this can go up/down.
@@ -257,10 +283,9 @@ final class OverviewModel: NSObject {
         if game.turns.count != numberOfTurns {
             nextTurnForGameWith(id: id)
         } else {
-            //TODO: - Game finished simulating, show results/turns
             games[id].isSimulated = true
             print("Game finished! Total score is \(game.goalsHome)-\(game.goalsAway)")
-            gameWasSimulatedEvent.emit()
+            gameWasSimulatedEvent.emit(id)
         }
     }
     

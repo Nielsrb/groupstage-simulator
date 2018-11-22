@@ -32,9 +32,17 @@ final class OverviewView: View {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func shouldRefresh() {
-        model = OverviewModel.shared
-        tableView.reloadData()
+    public func reloadRowsWith(ids: [Int]) {
+        let indexPaths = ids.compactMap { id -> IndexPath? in
+            let indexPath = IndexPath(row: 0, section: id)
+            if tableView.cellForRow(at: indexPath) != nil {
+                return indexPath
+            }
+            return nil
+        }
+        
+        tableView.reloadRows(at: indexPaths, with: .automatic)
+        tableView.scrollToRow(at: indexPaths[0], at: .top, animated: true)
     }
 }
 
@@ -87,7 +95,7 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        tableView.deselectRow(at: indexPath, animated: false)
     }
     
     // Datasource
@@ -122,17 +130,19 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
             }
         }
         
+        cell?.backgroundColor = game.isSimulated ? Colors.lightGray.UI : .white
+        
         if isNextMatch {
             cell?.scoreLabel.isHidden = true
             cell?.playButton.isHidden = false
             
-            cell?.backgroundColor = .white
+            //cell?.backgroundColor = .white
         } else {
             cell?.scoreLabel.isHidden = !game.isSimulated
             cell?.playButton.isHidden = true
             
             cell?.scoreLabel.text = "\(game.goalsHome) - \(game.goalsAway)"
-            cell?.backgroundColor = Colors.lightGray.UI
+            //cell?.backgroundColor = Colors.lightGray.UI
         }
         
         return cell!

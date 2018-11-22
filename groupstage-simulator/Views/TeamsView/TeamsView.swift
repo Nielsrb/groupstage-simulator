@@ -30,10 +30,6 @@ final class TeamsView: View {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    override func shouldRefresh() {
-        tableView.reloadData()
-    }
 }
 
 // MARK: -

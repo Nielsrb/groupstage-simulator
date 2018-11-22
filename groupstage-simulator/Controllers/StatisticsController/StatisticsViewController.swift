@@ -1,15 +1,15 @@
 //
-//  OverviewViewController.swift
+//  StatisticsViewController.swift
 //  groupstage-simulator
 //
-//  Created by Niels Beeuwkes on 21-11-18.
+//  Created by Niels Beeuwkes on 22/11/2018.
 //  Copyright © 2018 Niels Beeuwkes. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-final class OverviewViewController: UIViewController, Controller {
+final class StatisticsViewController: UIViewController, Controller {
     
     let controllerView: View
     
@@ -17,14 +17,6 @@ final class OverviewViewController: UIViewController, Controller {
         controllerView = view
         
         super.init(nibName: nil, bundle: nil)
-        
-        OverviewModel.shared.generateGames()
-        
-        OverviewModel.shared.gameWasSimulatedEvent.bind(self) { id in
-            if let view = self.controllerView as? OverviewView {
-                view.reloadRowsWith(ids: [id, id+1])
-            }
-        }
     }
     
     required init?(coder aDecoder: NSCoder) {

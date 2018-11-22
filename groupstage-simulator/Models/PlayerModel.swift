@@ -9,8 +9,8 @@
 import Foundation
 import UIKit
 
-private let playerFirstNames = ["Robert", "Bill", "Evan", "Richard", "Pepper", "Mauro", "Lucas", "Niels"]
-private let playerLastNames = ["Wood", "Shizuke", "Mulder", "Ndidi", "Lee", "San Giorgi", "van der Sloot"]
+private let playerFirstNames = ["Robert", "Bill", "Evan", "Richard", "Pepper", "Mauro", "Lucas", "Niels", "Jan", "Rob", "Edwin", "John", "Alex"]
+private let playerLastNames = ["Wood", "Shizuke", "Mulder", "Ndidi", "Lee", "San Giorgi", "van der Sloot", "de Groot", "Kluivert", "Santon", "Florence"]
 private var playerNames: [String] = []
 
 struct PlayerModel: Equatable {
@@ -124,7 +124,6 @@ struct PlayerModel: Equatable {
         let ageSpeedPower: Double = 50.0 - ((25.0 / 18.0) * (Double(age) - 18.0))
         let speedPower = ageSpeedPower + (lengthPower / 2)
         
-        print("age: \(age), length: \(length)")
         return (kick: kickPower, head: headPower, speed: speedPower)
     }
 }
