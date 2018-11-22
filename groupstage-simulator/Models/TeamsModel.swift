@@ -61,7 +61,9 @@ final class TeamsModel: NSObject {
         var players: [PlayerModel] = []
         
         for i in 0 ..< 11 {
-            players.append(PlayerModel.init(formation: formation, position: i))
+            var player = PlayerModel()
+            player.configure(formation: formation, position: i)
+            players.append(player)
         }
         
         return players

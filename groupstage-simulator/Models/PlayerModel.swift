@@ -14,19 +14,18 @@ private let playerLastNames = ["Wood", "Shizuke", "Mulder", "Ndidi", "Lee", "San
 private let playerNames: [String] = []
 
 struct PlayerModel: Equatable {
+    var firstName: String = ""
+    var lastName: String = ""
+    var age: Int = 0
+    var power: Int = 0
+    var position: (Int, Int) = (0, 0)
     
-    var firstName: String
-    var lastName: String
-    let age: Int
-    let power: Int
-    let position: (Int, Int)
-    
-    init(formation: Formations, position: Int) {
+    mutating func configure(formation: Formations, position: Int) {
         let names = generatePlayerName()
         self.firstName = names.firstName
         self.lastName = names.lastName
         
-        self.age = Int.random(in: 18 ... 34)
+        self.age = Int.random(in: 18 ... 36)
         self.power = Int.random(in: 50...100)
         
         self.position = positionForPlayer(formation: formation, position: position)
