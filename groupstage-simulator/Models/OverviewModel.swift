@@ -90,12 +90,15 @@ final class OverviewModel: NSObject {
                     game.goalsAway += 1
                 }
                 goal = true
+                
+                print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) scored! The score now stands \(game.goalsHome)-\(game.goalsAway)")
+            } else {
+                print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) misses!")
             }
             
             let keeper = game.holdingTeam == .home ? game.awayTeam.players.last! : game.homeTeam.players.last!
             
             // Either after scroring or missing, the ball should return to the others goalkeeper (might add chance for rebound?)
-            print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) scored! The score now stands \(game.goalsHome)-\(game.goalsAway)")
             game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: keeper, goal: goal))
             game.ballHolder = keeper
             game.holdingTeam = game.holdingTeam == .home ? .away : .home
@@ -131,7 +134,7 @@ final class OverviewModel: NSObject {
             }.min() ?? 50
             
             for (index, teammate) in posibleTeammates.enumerated() {
-                // Add the +2.5 for each point stronger than the weakest layer
+                // Add the +2.5 for each point stronger than the weakest player
                 let powerDifference = teammate.0.power - lowestPower
                 posibleTeammates[index].1 += Double(powerDifference) * 2.5
                 
@@ -144,7 +147,7 @@ final class OverviewModel: NSObject {
             }
             
             // Now that we calculated the chances, lets see to what player the current ball holder will pass to.
-            // First we need to know what the total amount of 'chance points' they got.
+            // First we need to know what the total amount of 'chance points' they have.
             var totalTeammatesChance: Double = 0
             for teammate in posibleTeammates {
                 totalTeammatesChance += teammate.1
@@ -154,18 +157,18 @@ final class OverviewModel: NSObject {
             var checkedTeammatesChance: Double = 0
             var chosenTeammate: PlayerModel = posibleTeammates.first!.0
             for teammate in posibleTeammates {
-                if checkedTeammatesChance + teammate.1 < randomTeammatesChanceValue {
+                if randomTeammatesChanceValue < checkedTeammatesChance + teammate.1 {
                     chosenTeammate = teammate.0
                 } else {
                     checkedTeammatesChance += teammate.1
                 }
             }
             
-            // Now we know what player the current holder is passing to, we can calculate how much chance the player has in succeeding this.
-            // A pass starts with a chance based on the players power (5-15), bases on the following conditions, this can go up/down.
+            // Now we know what player the current holder is passing to, we can now calculate how much chance the player has in succeeding this pass.
+            // A pass starts with a chance based on the players power (5-10), bases on the following conditions, this can go up/down.
             //   - Enemy teammates close to the player you are passing to. (Lowers the chance (1-5). The further away, the less effective.)
             //   - Friendly teammates close to the player you are passing to. (Increases the chance (1-7.5). The further away, the less effective.)
-            let baseChance = 5 + ((10 / 50) * (game.ballHolder.power - 50))
+            let baseChance = max(min(5 + ((10 / 50) * (game.ballHolder.power - 50)), 10), 5)
             var chances = [Double(baseChance)]
             
             // We have to know what enemies are able to intercept the pass.
