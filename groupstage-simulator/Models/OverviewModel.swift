@@ -308,7 +308,7 @@ final class OverviewModel: NSObject {
         }
     }
     
-    private func teamForPlayer(player: PlayerModel, inGame: Game) -> Teams {
+    public func teamForPlayer(player: PlayerModel, inGame: Game) -> Teams {
         var team: Teams = .home
         
         for awayPlayer in inGame.awayTeam.players {

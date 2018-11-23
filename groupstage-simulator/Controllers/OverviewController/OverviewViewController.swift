@@ -25,10 +25,12 @@ final class OverviewViewController: UIViewController, Controller {
                 view.reloadRowsWith(ids: [id, id+1])
             }
             
-            let gamePopup = GamePopupView(frame: view.bounds)
-            self.controllerView.addSubview(gamePopup)
-            
-            gamePopup.togglePopup(open: true)
+//            if let game = OverviewModel.shared.games.first(where: { return $0.id == id }) {
+//                let gamePopup = GamePopupView(frame: view.bounds, game: game)
+//                self.controllerView.addSubview(gamePopup)
+                
+//                gamePopup.togglePopup(open: true)
+//            }
         }
     }
     
