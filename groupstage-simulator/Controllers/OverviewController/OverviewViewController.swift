@@ -26,10 +26,8 @@ final class OverviewViewController: UIViewController, Controller {
             }
             
             if let game = OverviewModel.shared.games.first(where: { return $0.id == id }) {
-                let gamePopup = GamePopupView(frame: view.bounds, game: game)
-                self.controllerView.addSubview(gamePopup)
-            
-                gamePopup.togglePopup(open: true)
+                let gamePopup = GamePopupViewController(view: GamePopupView(frame: view.frame, game: game))
+                self.present(gamePopup, animated: true)
             }
         }
     }

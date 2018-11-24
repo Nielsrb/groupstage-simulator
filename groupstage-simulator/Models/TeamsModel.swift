@@ -57,7 +57,6 @@ final class TeamsModel: NSObject {
     }
     
     // Generate a player, random names and power
-    // TODO: - Players should not be able to have the same first and last name.
     private func generatePlayerModels(formation: Formations, handicap: Double) -> [PlayerModel] {
         var players: [PlayerModel] = []
         

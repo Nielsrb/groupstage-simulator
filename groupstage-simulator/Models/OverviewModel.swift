@@ -198,15 +198,11 @@ final class OverviewModel: NSObject {
                 }
             }
             
-            // TODO: - Rework intercepting!
-            // Total power friendly's vs total power enemy's.
-            // Lower power in % depending on distance
-            
-            // Possible features for passing/intercepting:
+            // Possible future features for passing/intercepting:
             //   - Make the pass possible to be a high/far shot as well, in this case instead of comparing Power, compare headPower or speedPower.
             
             // Now we know what player the current holder is passing to, we can now calculate how much chance the player has in succeeding this pass.
-            //  - The person receiving the ball, and possibliy the enemy on the same grid use full power when defending.
+            //  - The person receiving the ball, and possibly the enemy on the same grid use full power when defending.
             //  - Each teammate and enemy in the same row can support their teammate with receiving/intercepting the ball, yet the further away they are, the less effective they help.
             var chances: [Double] = []
             
