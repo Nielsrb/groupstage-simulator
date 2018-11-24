@@ -15,9 +15,9 @@ final class OverviewModel: NSObject {
     var games: [Game] = []
     var currentGame: Game?
     
-    let numberOfTurns: Int = 30
+    let numberOfTurns: Int = 40
     
-    let gameWasSimulatedEvent = Event<Void>()
+    let gameWasSimulatedEvent = Event<Int>()
     
     public func generateGames() {
         let teamsModel = TeamsModel.shared
@@ -59,16 +59,22 @@ final class OverviewModel: NSObject {
     
     
     private func nextTurnForGameWith(id: Int) {
-        //TODO: - Simulate a turn
         var game = games[id]
         
-        // First move of the second half, the goalkeeper should start with the ball (might create actual kick-off later on
-        if game.turns.count == (numberOfTurns / 2) {
-            print("First half finished! Away's keeper is now ball holder")
-            game.ballHolder = game.awayTeam.players.last!
+        // First move of a half, the defenders should start with the ball (might create actual kick-off later on)
+        if game.turns.count == 0 || game.turns.count == (numberOfTurns / 2) {
+            let team = game.turns.count == 0 ? game.homeTeam : game.awayTeam
+            
+            let defenders = team.players.filter { player in
+                return player.position.1 == 1
+            }
+            
+            if let player = defenders.randomElement() {
+                game.ballHolder = player
+            }
         }
         
-        // Player is a forwarder, should shoot on goal
+        // Player is a forwarder, player should shoot on goal
         if game.ballHolder.position.1 == 3 {
             var goalChance: Double = 60
             
@@ -77,15 +83,12 @@ final class OverviewModel: NSObject {
             let enemyPower = game.holdingTeam == .home ? game.awayTeam.players.last!.power : game.homeTeam.players.last!.power
             let difference: Double = Double(playerPower - enemyPower)
             
-            goalChance = max(goalChance + (difference*1.5), 95) // 1.5% goal chance +- per power level difference, with a maximum of 95% chance.
+            goalChance = max(min(goalChance + (difference*1.5), 95), 10) // +-1.5% goal chance per power level difference, with a maximum of 95% chance, and a minimum of 10% chance.
             
-            let totalPower = playerPower + enemyPower
-            let goalValue = Double(totalPower) * goalChance
-            
-            let randomValue = Int.random(in: 0...totalPower)
+            let randomValue = Int.random(in: 0...100)
             
             var goal = false
-            if randomValue < Int(goalValue) {
+            if randomValue < Int(goalChance) {
                 // GOAL
                 if game.holdingTeam == .home {
                     game.goalsHome += 1
@@ -93,15 +96,46 @@ final class OverviewModel: NSObject {
                     game.goalsAway += 1
                 }
                 goal = true
+                
+                var teamIndex: Int = 0
+                for (index, team) in TeamsModel.shared.teams.enumerated() {
+                    if team == (game.holdingTeam == .home ? game.homeTeam : game.awayTeam) {
+                        teamIndex = index
+                        break
+                    }
+                }
+                
+                for (index, player) in TeamsModel.shared.teams[teamIndex].players.enumerated() {
+                    if player == game.ballHolder {
+                        TeamsModel.shared.teams[teamIndex].players[index].goals += 1
+                        break
+                    }
+                }
+                
+                print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) scored! The score now stands \(game.goalsHome)-\(game.goalsAway)")
+            } else {
+                print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) misses!")
             }
             
-            let keeper = game.holdingTeam == .home ? game.awayTeam.players.last! : game.homeTeam.players.last!
+            var ballHolder = game.holdingTeam == .home ? game.awayTeam.players.last! : game.homeTeam.players.last!
+            let holdingTeam: Teams = game.holdingTeam == .home ? .away : .home
             
-            // Either after scroring or missing, the ball should return to the others goalkeeper (might add chance for rebound?)
-            print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) scored! The score now stands \(game.goalsHome)-\(game.goalsAway)")
-            game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: keeper, goal: goal))
-            game.ballHolder = keeper
-            game.holdingTeam = game.holdingTeam == .home ? .away : .home
+            // If goal was made, let the defenders start with the ball
+            if goal {
+                let team = holdingTeam == .home ? game.homeTeam : game.awayTeam
+                let defenders = team.players.filter { player in
+                    return player.position.1 == 1
+                }
+                
+                if let player = defenders.randomElement() {
+                    ballHolder = player
+                }
+            }
+            
+            // Either after scroring or missing, the ball should return to the others goalkeeper (might add chance for rebound?).
+            game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: ballHolder, goal: goal))
+            game.ballHolder = ballHolder
+            game.holdingTeam = holdingTeam
         } else {
             // Player is either a goalkeeper, defender or midfielder. He should try passing.
             // Player should make a decision who to pass to:
@@ -112,64 +146,69 @@ final class OverviewModel: NSObject {
             let yPosCurrentGrid = game.ballHolder.position.1
             let teamMates = game.holdingTeam == .home ? game.homeTeam.players : game.awayTeam.players
             
-            // Posible teammates, all players the current ball holder is currently able to pass to
+            // Posible teammates, all players the current ball holder is currently able to pass to.
             // .0 = PlayerModel
-            // .1 = Double, represents the amount of chance points someone has
-            var posibleTeammates = teamMates.compactMap { player -> (PlayerModel, Double)? in
+            // .1 = Double, represents the amount of chance points someone has.
+            var possibleTeammates = teamMates.compactMap { player -> (PlayerModel, Double)? in
                 if player.position.1 == yPosCurrentGrid + 1 {
                     return (player, 100)
                 }
                 return nil
             }
             
-            guard posibleTeammates.count > 0 else {
+            guard possibleTeammates.count > 0 else {
                 games[id] = game
                 nextTurnForGameWith(id: id)
                 return
             }
             
             // We should know the weakest posible teammate, the other teammates should get extra chance points
-            let lowestPower = posibleTeammates.compactMap { teammate -> Int in
+            let lowestPower = possibleTeammates.compactMap { teammate -> Int in
                 return teammate.0.power
             }.min() ?? 50
             
-            for (index, teammate) in posibleTeammates.enumerated() {
-                // Add the +2.5 for each point stronger than the weakest layer
+            for (index, teammate) in possibleTeammates.enumerated() {
+                // Add the +2.5 for each point stronger than the weakest player
                 let powerDifference = teammate.0.power - lowestPower
-                posibleTeammates[index].1 += Double(powerDifference) * 2.5
+                possibleTeammates[index].1 += Double(powerDifference) * 2.5
                 
                 // Decrease the -5 for each grid further away from the current ball holder
                 var gridDifference = yPosCurrentGrid - teammate.0.position.1
                 if gridDifference < 0 {
                     gridDifference = -gridDifference
                 }
-                posibleTeammates[index].1 -= Double(gridDifference) * 7.5
+                possibleTeammates[index].1 -= Double(gridDifference) * 7.5
             }
             
             // Now that we calculated the chances, lets see to what player the current ball holder will pass to.
-            // First we need to know what the total amount of 'chance points' they got.
+            // First we need to know what the total amount of 'chance points' they have.
             var totalTeammatesChance: Double = 0
-            for teammate in posibleTeammates {
+            for teammate in possibleTeammates {
                 totalTeammatesChance += teammate.1
             }
             
             let randomTeammatesChanceValue = Double.random(in: 0 ..< totalTeammatesChance)
             var checkedTeammatesChance: Double = 0
-            var chosenTeammate: PlayerModel = posibleTeammates.first!.0
-            for teammate in posibleTeammates {
-                if checkedTeammatesChance + teammate.1 < randomTeammatesChanceValue {
+            var chosenTeammate: PlayerModel = possibleTeammates.first!.0
+            for teammate in possibleTeammates {
+                if randomTeammatesChanceValue < checkedTeammatesChance + teammate.1 {
                     chosenTeammate = teammate.0
                 } else {
                     checkedTeammatesChance += teammate.1
                 }
             }
             
-            // Now we know what player the current holder is passing to, we can calculate how much chance the player has in succeeding this.
-            // A pass starts with a chance based on the players power (5-15), bases on the following conditions, this can go up/down.
-            //   - Enemy teammates close to the player you are passing to. (Lowers the chance (1-5%). The further, the less effective.)
-            //   - Friendly teammates close to the player you are passing to. (Increases the chance (1-7.5%). The further, the less effective.)
-            let baseChance = 5 + ((10 / 50) * (game.ballHolder.power - 50))
-            var chances = [Double(baseChance)]
+            // TODO: - Rework intercepting!
+            // Total power friendly's vs total power enemy's.
+            // Lower power in % depending on distance
+            
+            // Possible features for passing/intercepting:
+            //   - Make the pass possible to be a high/far shot as well, in this case instead of comparing Power, compare headPower or speedPower.
+            
+            // Now we know what player the current holder is passing to, we can now calculate how much chance the player has in succeeding this pass.
+            //  - The person receiving the ball, and possibliy the enemy on the same grid use full power when defending.
+            //  - Each teammate and enemy in the same row can support their teammate with receiving/intercepting the ball, yet the further away they are, the less effective they help.
+            var chances: [Double] = []
             
             // We have to know what enemies are able to intercept the pass.
             let yPosEnemies = 4 - chosenTeammate.position.1
@@ -180,35 +219,28 @@ final class OverviewModel: NSObject {
                 return nil
             }
             
-            // Removing itself from posible teammates to only keep the players capable of supporting him
-            let supportTeammates = posibleTeammates.compactMap { player -> (PlayerModel, Double)? in
-                if player.0 != chosenTeammate {
-                    return player
-                }
-                return nil
-            }
-            
             // When there are no enemies, pass succesion should be 100% (this should not be possible right now).
             if enemies.count == 0 {
                 chances[0] = 100
+                print("ERROR")
             } else {
-                // Calculate the chances for each supporting teammate (1-5%)
-                for teammate in supportTeammates {
+                // Calculate the power for each supporting teammate and ball receiver
+                for teammate in possibleTeammates {
                     var gridDifference = chosenTeammate.position.0 - teammate.0.position.0
                     if gridDifference < 0 {
                         gridDifference = -gridDifference
                     }
-                    let chance = max(1, 6 - gridDifference) // 6 instead of 5 because a teammate could never be on the same x-pos on the grid
-                    chances.append(Double(chance))
+                    let chance = max(10, Double(teammate.0.power) * max(0.1, 1 - (Double(gridDifference) * 0.1))) // -10% power per grid
+                    chances.append(chance)
                 }
                 
-                // Calculate the chances for each enemy (1-7.5%)
+                // Calculate the power for each enemy
                 for enemy in enemies {
                     var gridDifference = chosenTeammate.position.0 - enemy.position.0
                     if gridDifference < 0 {
                         gridDifference = -gridDifference
                     }
-                    let chance = max(1.0, 7.5 - Double(gridDifference))
+                    let chance = max(10, Double(enemy.power) * max(0.1, 1 - (Double(gridDifference) * 0.1))) // -10% power per grid
                     chances.append(chance)
                 }
             }
@@ -225,9 +257,9 @@ final class OverviewModel: NSObject {
             if randomChanceValue < chances[0] {
                 passSucceeded = true
             } else {
-                if supportTeammates.count > 0 {
-                    for i in 1 ... supportTeammates.count { // -1 for the person who is receiving the ball (can't acces supportedTeammates from here)
-                        if checkedChance + chances[i] < randomChanceValue {
+                if possibleTeammates.count > 0 {
+                    for i in 0 ..< possibleTeammates.count {
+                        if randomChanceValue < checkedChance + chances[i] {
                             passSucceeded = true
                         } else {
                             checkedChance += chances[i]
@@ -256,14 +288,27 @@ final class OverviewModel: NSObject {
         if game.turns.count != numberOfTurns {
             nextTurnForGameWith(id: id)
         } else {
-            //TODO: - Game finished simulating, show results/turns
             games[id].isSimulated = true
             print("Game finished! Total score is \(game.goalsHome)-\(game.goalsAway)")
-            gameWasSimulatedEvent.emit()
+            gameWasSimulatedEvent.emit(id)
+            
+            for (index, team) in TeamsModel.shared.teams.enumerated() {
+                if team.name == game.homeTeam.name {
+                    TeamsModel.shared.teams[index].goals += game.goalsHome
+                    TeamsModel.shared.teams[index].goalsAgainst += game.goalsAway
+                    TeamsModel.shared.teams[index].points += game.goalsAway > game.goalsHome ? 0 : game.goalsHome == game.goalsAway ? 1 : 3
+                    TeamsModel.shared.teams[index].played += 1
+                } else if team.name == game.awayTeam.name {
+                    TeamsModel.shared.teams[index].goals += game.goalsAway
+                    TeamsModel.shared.teams[index].goalsAgainst += game.goalsHome
+                    TeamsModel.shared.teams[index].points += game.goalsAway > game.goalsHome ? 3 : game.goalsHome == game.goalsAway ? 1 : 0
+                    TeamsModel.shared.teams[index].played += 1
+                }
+            }
         }
     }
     
-    private func teamForPlayer(player: PlayerModel, inGame: Game) -> Teams {
+    public func teamForPlayer(player: PlayerModel, inGame: Game) -> Teams {
         var team: Teams = .home
         
         for awayPlayer in inGame.awayTeam.players {
@@ -273,6 +318,25 @@ final class OverviewModel: NSObject {
         }
         
         return team
+    }
+    
+    public func goalsForTurn(turn: Int, inGame game: Game) -> (home: Int, away: Int) {
+        var goals: (home: Int, away: Int) = (home: 0, away: 0)
+        
+        for i in 0 ... turn {
+            let holdingTeam: Teams = game.homeTeam.players.contains(game.turns[i].fromPlayer) ? .home : .away
+            
+            if game.turns[i].goal {
+                switch holdingTeam {
+                case .home:
+                    goals.home += 1
+                case .away:
+                    goals.away += 1
+                }
+            }
+        }
+        
+        return goals
     }
 }
 

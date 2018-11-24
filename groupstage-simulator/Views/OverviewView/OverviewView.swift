@@ -15,7 +15,7 @@ final class OverviewView: View {
     let cellHeight: CGFloat = 70
     let padding: CGFloat = 10
     
-    var model = OverviewModel.shared
+    let model = OverviewModel.shared
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,6 +25,7 @@ final class OverviewView: View {
         tableView.dataSource = self
         tableView.backgroundColor = .white
         tableView.separatorStyle = .none
+        tableView.allowsSelection = false
         addSubview(tableView)
     }
     
@@ -32,9 +33,17 @@ final class OverviewView: View {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func shouldRefresh() {
-        model = OverviewModel.shared
-        tableView.reloadData()
+    public func reloadRowsWith(ids: [Int]) {
+        let indexPaths = ids.compactMap { id -> IndexPath? in
+            let indexPath = IndexPath(row: 0, section: id)
+            if tableView.cellForRow(at: indexPath) != nil {
+                return indexPath
+            }
+            return nil
+        }
+        
+        tableView.reloadRows(at: indexPaths, with: .automatic)
+        tableView.scrollToRow(at: indexPaths[0], at: .middle, animated: true)
     }
 }
 
@@ -47,12 +56,17 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return cellHeight
+        return 50
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: cellHeight))
+        let header = UIView(frame: CGRect(x: padding, y: 0, width: tableView.frame.size.width - (padding*2), height: 50))
+        
+        let view = UIView(frame: CGRect(x: padding, y: 0, width: tableView.frame.size.width - (padding*2), height: 50))
         view.backgroundColor = Colors.blue.UI
+        view.layer.cornerRadius = 4
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        header.addSubview(view)
         
         let game = model.games[section]
         
@@ -60,34 +74,36 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
         versusLabel.text = "vs"
         versusLabel.textColor = .white
         versusLabel.textAlignment = .center
+        versusLabel.font = UIFont.boldSystemFont(ofSize: 18)
         view.addSubview(versusLabel)
         
         let homeLabel = UILabel(frame: CGRect(x: padding, y: 0, width: (view.frame.size.width / 2) - (padding*2) - (versusLabel.frame.size.width / 2), height: view.frame.size.height))
         homeLabel.text = game.homeTeam.name
         homeLabel.textColor = .white
         homeLabel.textAlignment = .left
+        homeLabel.font = UIFont.boldSystemFont(ofSize: 18)
         view.addSubview(homeLabel)
         
         let awayLabel = UILabel(frame: CGRect(x: (view.frame.size.width / 2) + (versusLabel.frame.size.width / 2) + padding, y: 0, width: (view.frame.size.width / 2) - (padding*2) - (versusLabel.frame.size.width / 2), height: view.frame.size.height))
         awayLabel.text = game.awayTeam.name
         awayLabel.textColor = .white
         awayLabel.textAlignment = .right
+        awayLabel.font = UIFont.boldSystemFont(ofSize: 18)
         view.addSubview(awayLabel)
         
-        return view
+        return header
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 75
+        return 50
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50))
-        return view
+        return UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50))
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        tableView.deselectRow(at: indexPath, animated: false)
     }
     
     // Datasource
@@ -126,13 +142,13 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
             cell?.scoreLabel.isHidden = true
             cell?.playButton.isHidden = false
             
-            cell?.backgroundColor = .white
+            //cell?.backgroundColor = .white
         } else {
             cell?.scoreLabel.isHidden = !game.isSimulated
             cell?.playButton.isHidden = true
             
             cell?.scoreLabel.text = "\(game.goalsHome) - \(game.goalsAway)"
-            cell?.backgroundColor = Colors.lightGray.UI
+            //cell?.backgroundColor = Colors.lightGray.UI
         }
         
         return cell!
@@ -155,7 +171,12 @@ private class GameCell: UITableViewCell {
     init() {
         super.init(style: .default, reuseIdentifier: GameCell.identifier)
         
-        backgroundColor = Colors.lightGray.UI
+        let background = UIView(frame: CGRect(x: padding, y: 0, width: frame.size.width - (padding*2), height: frame.size.height))
+        background.backgroundColor = Colors.lightGray.UI
+        background.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        background.layer.cornerRadius = 4
+        background.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        addSubview(background)
         
         scoreLabel.textColor = .black
         scoreLabel.textAlignment = .center
@@ -181,6 +202,7 @@ private class GameCell: UITableViewCell {
     }
     
     @objc private func playButtonPressed() {
+        // TODO: - View should not talk directly with the models, Controller should be inbetween.
         OverviewModel.shared.simulateGameWith(id: playButton.tag)
     }
 }

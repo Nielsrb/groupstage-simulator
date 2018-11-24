@@ -19,20 +19,19 @@ final class TeamsView: View {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        tableView.frame = frame
+        backgroundColor = .white
+        
+        tableView.frame = CGRect(x: 10, y: 0, width: frame.size.width - 20, height: frame.size.height)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .white
         tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false
         addSubview(tableView)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func shouldRefresh() {
-        tableView.reloadData()
     }
 }
 
@@ -51,6 +50,8 @@ extension TeamsView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: cellHeight))
         view.backgroundColor = Colors.blue.UI
+        view.layer.cornerRadius = 4
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         
         let team = model.teams[section]
         let powerViewSize: CGFloat = 35
@@ -122,6 +123,7 @@ extension TeamsView: UITableViewDelegate, UITableViewDataSource {
 private class PlayerCell: UITableViewCell {
     static let identifier = "PLAYER"
     
+    let background = UIView()
     let nameLabel = UILabel()
     let powerLabel = UILabel()
     let positionLabel = UILabel()
@@ -134,9 +136,13 @@ private class PlayerCell: UITableViewCell {
     init() {
         super.init(style: .default, reuseIdentifier: PlayerCell.identifier)
         
+        contentView.backgroundColor = Colors.lightGray.UI
+        contentView.layer.cornerRadius = 4
+        contentView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        
         nameLabel.textColor = .black
         nameLabel.font = UIFont.systemFont(ofSize: 14)
-        addSubview(nameLabel)
+        contentView.addSubview(nameLabel)
         
         powerLabel.textColor = .black
         powerLabel.textAlignment = .center
@@ -144,7 +150,7 @@ private class PlayerCell: UITableViewCell {
         //powerLabel.backgroundColor = .green
         powerLabel.layer.cornerRadius = 4
         powerLabel.clipsToBounds = true
-        addSubview(powerLabel)
+        contentView.addSubview(powerLabel)
         
         positionLabel.textColor = .white
         positionLabel.textAlignment = .center
@@ -152,8 +158,7 @@ private class PlayerCell: UITableViewCell {
         positionLabel.backgroundColor = Colors.darkGray.UI
         positionLabel.layer.cornerRadius = 4
         positionLabel.clipsToBounds = true
-        addSubview(positionLabel)
-        
+        contentView.addSubview(positionLabel)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -163,13 +168,13 @@ private class PlayerCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        nameLabel.frame = CGRect(x: 10, y: 0, width: frame.size.width - 10 - infoViewSize - 10, height: frame.size.height)
+        nameLabel.frame = CGRect(x: 10, y: 0, width: contentView.frame.size.width - 10 - infoViewSize - 10, height: contentView.frame.size.height)
         
         powerLabel.sizeToFit()
-        powerLabel.frame = CGRect(x: frame.size.width - infoViewSize - 10, y: (frame.size.height - infoViewSize) / 2, width: infoViewSize, height: infoViewSize)
+        powerLabel.frame = CGRect(x: contentView.frame.size.width - infoViewSize - 10, y: (contentView.frame.size.height - infoViewSize) / 2, width: infoViewSize, height: infoViewSize)
         powerLabel.backgroundColor = Int(powerLabel.text ?? "") ?? 50 >= 100 ? Colors.gold.UI : Colors.green.UI
         
-        positionLabel.frame = CGRect(x: powerLabel.frame.origin.x - 10 - positionViewSize, y: (frame.size.height - infoViewSize) / 2, width: positionViewSize, height: infoViewSize)
+        positionLabel.frame = CGRect(x: powerLabel.frame.origin.x - 10 - positionViewSize, y: (contentView.frame.size.height - infoViewSize) / 2, width: positionViewSize, height: infoViewSize)
         positionLabel.text = getStringForPosition(position: position)
     }
     

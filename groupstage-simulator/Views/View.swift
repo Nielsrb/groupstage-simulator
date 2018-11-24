@@ -9,12 +9,6 @@
 import Foundation
 import UIKit
 
-protocol ViewProtocol {
-    func shouldRefresh()
-}
+protocol ViewProtocol {}
 
-class View: UIView, ViewProtocol {
-    func shouldRefresh() {
-        
-    }
-}
+class View: UIView, ViewProtocol {}

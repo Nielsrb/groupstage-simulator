@@ -13,11 +13,8 @@ final class TeamsModel: NSObject {
     
     static let shared = TeamsModel()
     
-    private let teamFirstNames = ["Real", "SC", "FC", "Atletico"]
-    private let teamLastNames = ["Cambuur", "Madrid", "Hotspur", "Zoetermeer", "Barcelona", "London", "Amsterdam", "Kaapstad"]
-    
-    private let playerFirstNames = ["Robert", "Bill", "Evan", "Richard", "Pepper", "Mauro", "Lucas", "Niels"]
-    private let playerLastNames = ["Wood", "Shizuke", "Mulder", "Ndidi", "Lee", "San Giorgi", "van der Sloot"]
+    private let teamFirstNames = ["Real", "SC", "FC", "Atletico", "Youth"]
+    private let teamLastNames = ["Cambuur", "Madrid", "Hotspur", "Zoetermeer", "Barcelona", "London", "Amsterdam", "Kaapstad", "Rotterdam", "Groningen", "Lelystad"]
     
     var teams: [TeamModel] = []
     
@@ -52,39 +49,22 @@ final class TeamsModel: NSObject {
         }
         
         let formation = generateRandomFormation()
-        let players = generatePlayerModels(formation: formation)
+        let handicap = [0.75, 1.0, 1.5].randomElement()! // Handicaps are added to show the difference between team powers during the simulation
+        let players = generatePlayerModels(formation: formation, handicap: handicap)
         let power = teamPowerFor(players: players)
         
-        return TeamModel(name: teamName, formation: formation, players: players, power: power)
+        return TeamModel(name: teamName, formation: formation, players: players, power: power, played: 0, points: 0, goals: 0, goalsAgainst: 0)
     }
     
     // Generate a player, random names and power
     // TODO: - Players should not be able to have the same first and last name.
-    private func generatePlayerModels(formation: Formations) -> [PlayerModel] {
+    private func generatePlayerModels(formation: Formations, handicap: Double) -> [PlayerModel] {
         var players: [PlayerModel] = []
         
         for i in 0 ..< 11 {
-            let firstName = playerFirstNames[Int.random(in: 0 ..< playerFirstNames.count)]
-            let lastName = playerLastNames[Int.random(in: 0 ..< playerLastNames.count)]
-            let fullName = "\(firstName) \(lastName)"
-            
-            // Making sure a team can't contain 2 players with the same name.
-            var valid = true
-            for player in players {
-                if "\(player.firstName) \(player.lastName)" == fullName {
-                    valid = false
-                    break
-                }
-            }
-            
-            guard valid else  {
-                return generatePlayerModels(formation:formation)
-            }
-            
-            let age = Int.random(in: 18 ... 34)
-            let power = Int.random(in: 50...100)
-            
-            players.append(PlayerModel(firstName: firstName, lastName: lastName, age: age, power: power, position: positionForPlayer(formation: formation, position: i)))
+            var player = PlayerModel()
+            player.configure(formation: formation, position: i, handicap: handicap)
+            players.append(player)
         }
         
         return players
@@ -121,78 +101,20 @@ final class TeamsModel: NSObject {
             return .A
         }
     }
-    
-    private func positionForPlayer(formation: Formations, position: Int) -> (Int, Int) {
-        var form = (2, 4, 4)
-        
-        switch formation {
-        case .A:
-            form = (2, 4, 4)
-        case .B:
-            form = (3, 3, 4)
-            break
-        case .C:
-            form = (4, 2, 4)
-            break
-        case .D:
-            form = (1, 4, 5)
-            break
-        case .E:
-            form = (3, 4, 3)
-            break
-        }
-        
-        // Calculate position for a player
-        if position < form.0 { // player is in first row (forwarder)
-            let playerSpace: CGFloat = 9 / CGFloat(form.0)
-            let locInPlayerSpace: CGFloat = playerSpace / 2
-            let totalLoc: CGFloat = (playerSpace * CGFloat(position)) + locInPlayerSpace
-            let xPos = Int(floor(totalLoc))
-            
-            return (xPos, 3)
-        } else if position < (form.0 + form.1) { // player is in second row (midfielder)
-            let pos = position - form.0
-            let playerSpace: CGFloat = 9 / CGFloat(form.1)
-            let locInPlayerSpace: CGFloat = playerSpace / 2
-            let totalLoc: CGFloat = (playerSpace * CGFloat(pos)) + locInPlayerSpace
-            let xPos = Int(floor(totalLoc))
-            
-            return (Int(xPos), 2)
-        } else if position < (form.0 + form.1 + form.2) { // player is in third row (defender)
-            let pos = position - form.0 - form.1
-            let playerSpace: CGFloat = 9 / CGFloat(form.2)
-            let locInPlayerSpace: CGFloat = playerSpace / 2
-            let totalLoc: CGFloat = (playerSpace * CGFloat(pos)) + locInPlayerSpace
-            let xPos = Int(floor(totalLoc))
-            
-            return (Int(xPos), 1)
-        } else { // player is in last row (keeper)
-            return (4, 0)
-        }
-    }
 }
 
-struct TeamModel {
+struct TeamModel: Equatable {
     let name: String
     let formation: Formations
-    let players: [PlayerModel]
+    var players: [PlayerModel]
     let power: Int
+    var played: Int
+    var points: Int
+    var goals: Int
+    var goalsAgainst: Int
 }
 
-struct PlayerModel: Equatable {
-    
-    static func == (lhs: PlayerModel, rhs: PlayerModel) -> Bool {
-        return ("\(lhs.firstName) \(lhs.lastName)") == ("\(rhs.firstName) \(rhs.lastName)")
-    }
-    
-    let firstName: String
-    let lastName: String
-    let age: Int
-    let power: Int
-    let position: (Int, Int)
-}
-
-enum Formations: String {
+public enum Formations: String {
     case A = "2-4-4"
     case B = "3-3-4"
     case C = "4-2-4"

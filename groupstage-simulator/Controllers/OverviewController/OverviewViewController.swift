@@ -20,16 +20,29 @@ final class OverviewViewController: UIViewController, Controller {
         
         OverviewModel.shared.generateGames()
         
-        OverviewModel.shared.gameWasSimulatedEvent.bind(self) {
-            self.controllerView.shouldRefresh()
+        OverviewModel.shared.gameWasSimulatedEvent.bind(self) { id in
+            if let view = self.controllerView as? OverviewView {
+                view.reloadRowsWith(ids: [id, id+1])
+            }
+            
+            if let game = OverviewModel.shared.games.first(where: { return $0.id == id }) {
+                let gamePopup = GamePopupView(frame: view.bounds, game: game)
+                self.controllerView.addSubview(gamePopup)
+            
+                gamePopup.togglePopup(open: true)
+            }
         }
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
         view.addSubview(controllerView)
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    override func viewWillAppear(_ animated: Bool) {
+        tabBarController?.title = "Overview"
     }
 }

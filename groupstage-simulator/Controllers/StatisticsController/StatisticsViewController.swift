@@ -1,29 +1,22 @@
 //
-//  TeamsViewController.swift
+//  StatisticsViewController.swift
 //  groupstage-simulator
 //
-//  Created by Niels Beeuwkes on 19-11-18.
+//  Created by Niels Beeuwkes on 22/11/2018.
 //  Copyright © 2018 Niels Beeuwkes. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-final class TeamsViewController: UIViewController, Controller {
-    
-    // Teams model, contains all teams with its players.
-    var model = TeamsModel.shared
+final class StatisticsViewController: UIViewController, Controller {
     
     let controllerView: View
-    let tableView = UITableView()
     
     init(view: View) {
         controllerView = view
         
         super.init(nibName: nil, bundle: nil)
-        
-        // Generate 4 new teams, can only be done once.
-        model.generateTeams()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -35,6 +28,10 @@ final class TeamsViewController: UIViewController, Controller {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        tabBarController?.title = "Teams"
+        if let view = controllerView as? StatisticsView {
+            view.reloadData()
+        }
+        
+        tabBarController?.title = "Statistics"
     }
 }
