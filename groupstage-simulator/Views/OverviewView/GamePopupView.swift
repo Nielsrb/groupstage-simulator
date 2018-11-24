@@ -180,20 +180,17 @@ extension GamePopupView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        // If
-        guard section == 1 && max(turnsFinished - (section * (game.turns.count / 2)), 0) != 0 else {
+        /*guard section == 1 && max(turnsFinished - (section * (game.turns.count / 2)), 0) != 0 else {
             return nil
-        }
+        }*/
         
         // scrollToRow seems buggy when using section headers.
         // TODO: Try to find a way to allow section headers without being buggy.
-        return nil
-        
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50))
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 30))
         view.backgroundColor = .white
         
         let label = UILabel(frame: view.bounds)
-        label.text = "SECOND HALF"
+        label.text = section == 0 ? "FIRST HALF" : "SECOND HALF"
         label.textColor = Colors.lightGray.UI
         label.font = UIFont.systemFont(ofSize: 14)
         label.sizeToFit()
@@ -212,7 +209,7 @@ extension GamePopupView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0 // section == 1 && max(turnsFinished - (section * (game.turns.count / 2)), 0) != 0 ? 50 : 0
+        return section == 0 || max(turnsFinished - (section * (game.turns.count / 2)), 0) != 0 ? 30 : 0
     }
     
     // Delegate
@@ -233,7 +230,7 @@ fileprivate final class GameTurnCell: UITableViewCell {
     private let turnLabel = UILabel()
     private let turnImageView = UIImageView()
     private let timeLabel = UILabel()
-    private let line = UIView()
+    //private let line = UIView()
     
     var fromTeam: Teams = .home
     var toTeam: Teams = .away
@@ -258,7 +255,7 @@ fileprivate final class GameTurnCell: UITableViewCell {
         timeLabel.clipsToBounds = true
         addSubview(timeLabel)
         
-        line.backgroundColor = Colors.lightGray.UI
+        //line.backgroundColor = Colors.lightGray.UI
         //addSubview(line)
     }
     
@@ -294,10 +291,10 @@ fileprivate final class GameTurnCell: UITableViewCell {
         turnLabel.frame = CGRect(x: textSide == .home ? padding : padding + labelWidth + frame.size.height, y: 0, width: labelWidth, height: frame.size.height)
         turnLabel.textAlignment = textSide == .home ? .left : .right
         
-        if gameMinute != 44 {
+        /*if gameMinute != 44 {
             line.frame = CGRect(x: 10, y: frame.size.height - 1, width: frame.size.width - 20, height: 1)
         } else {
             line.frame = CGRect.zero
-        }
+        }*/
     }
 }

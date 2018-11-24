@@ -159,7 +159,6 @@ private class PlayerCell: UITableViewCell {
         positionLabel.layer.cornerRadius = 4
         positionLabel.clipsToBounds = true
         contentView.addSubview(positionLabel)
-        
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -33,4 +33,8 @@ final class TeamsViewController: UIViewController, Controller {
     override func viewDidLoad() {
         view.addSubview(controllerView)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        tabBarController?.title = "Teams"
+    }
 }

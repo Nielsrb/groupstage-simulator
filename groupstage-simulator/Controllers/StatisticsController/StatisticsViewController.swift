@@ -31,5 +31,7 @@ final class StatisticsViewController: UIViewController, Controller {
         if let view = controllerView as? StatisticsView {
             view.reloadData()
         }
+        
+        tabBarController?.title = "Statistics"
     }
 }
