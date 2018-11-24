@@ -319,6 +319,25 @@ final class OverviewModel: NSObject {
         
         return team
     }
+    
+    public func goalsForTurn(turn: Int, inGame game: Game) -> (home: Int, away: Int) {
+        var goals: (home: Int, away: Int) = (home: 0, away: 0)
+        
+        for i in 0 ... turn {
+            let holdingTeam: Teams = game.homeTeam.players.contains(game.turns[i].fromPlayer) ? .home : .away
+            
+            if game.turns[i].goal {
+                switch holdingTeam {
+                case .home:
+                    goals.home += 1
+                case .away:
+                    goals.away += 1
+                }
+            }
+        }
+        
+        return goals
+    }
 }
 
 struct Game {

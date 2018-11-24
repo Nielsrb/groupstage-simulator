@@ -31,6 +31,7 @@
 		46DB009F21A6F64400E36F58 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46DB009E21A6F64400E36F58 /* StatisticsView.swift */; };
 		46DB00A121A6F85500E36F58 /* ic_statistics@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46DB00A021A6F85500E36F58 /* ic_statistics@3x.png */; };
 		46DB00A321A758EE00E36F58 /* GamePopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46DB00A221A758EE00E36F58 /* GamePopupView.swift */; };
+		46DB00C321A9962B00E36F58 /* ic_close@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46DB00C221A9962B00E36F58 /* ic_close@3x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +61,7 @@
 		46DB009E21A6F64400E36F58 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		46DB00A021A6F85500E36F58 /* ic_statistics@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_statistics@3x.png"; sourceTree = "<group>"; };
 		46DB00A221A758EE00E36F58 /* GamePopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePopupView.swift; sourceTree = "<group>"; };
+		46DB00C221A9962B00E36F58 /* ic_close@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_close@3x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +112,7 @@
 		460C00CB21A4696F0001511D /* images */ = {
 			isa = PBXGroup;
 			children = (
+				46DB00C221A9962B00E36F58 /* ic_close@3x.png */,
 				13D0358D21A5735B00F7D7DD /* ic_overview@3x.png */,
 				46DB00A021A6F85500E36F58 /* ic_statistics@3x.png */,
 				460C00CC21A4697B0001511D /* ic_team@3x.png */,
@@ -281,6 +284,7 @@
 				460C00CD21A4697B0001511D /* ic_team@3x.png in Resources */,
 				4662018821A303300041FE63 /* Assets.xcassets in Resources */,
 				4662018621A3032F0041FE63 /* Main.storyboard in Resources */,
+				46DB00C321A9962B00E36F58 /* ic_close@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
