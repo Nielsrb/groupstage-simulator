@@ -120,7 +120,7 @@ final class StatisticsView: View {
             totalAmountOfGoals += team.goals
         }
         
-        let totalGoalsStat = designStat(title: "GOALS:", value: "Total amount of goals", amount: "\(totalAmountOfGoals)", yPos: yPos)
+        let totalGoalsStat = designStat(title: "GOALS:", value: "Total", amount: "\(totalAmountOfGoals)", yPos: yPos)
         gamesView.addSubview(totalGoalsStat)
         
         yPos += totalGoalsStat.frame.size.height + padding
@@ -133,7 +133,7 @@ final class StatisticsView: View {
         
         let averageAmountOfGoals = Double(totalAmountOfGoals) / (finishedGames.count > 0 ? Double(finishedGames.count) : 1)
         let averageAmountOfGoalsInt = Int(averageAmountOfGoals * 100) // We want a maximum of 2 decimals
-        let averageGoalsStat = designStat(title: nil, value: "Average amount of goals", amount: "\(Double(averageAmountOfGoalsInt) / 100)", yPos: yPos)
+        let averageGoalsStat = designStat(title: nil, value: "Average per match", amount: "\(Double(averageAmountOfGoalsInt) / 100)", yPos: yPos)
         gamesView.addSubview(averageGoalsStat)
         
         yPos += averageGoalsStat.frame.size.height + 30

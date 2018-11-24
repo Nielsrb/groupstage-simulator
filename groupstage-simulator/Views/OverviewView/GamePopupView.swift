@@ -43,6 +43,8 @@ final class GamePopupView: UIView {
         
         let header = UIView(frame: CGRect(x: 0, y: 0, width: contentView.frame.size.width, height: cellHeight))
         header.backgroundColor = Colors.blue.UI
+        header.layer.cornerRadius = 4
+        header.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         contentView.addSubview(header)
         
         let closeButton = UIButton(frame: CGRect(x: padding, y: padding, width: header.frame.size.height - (padding*2), height: header.frame.size.height - (padding*2)))
@@ -77,6 +79,7 @@ final class GamePopupView: UIView {
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.isUserInteractionEnabled = false
+        tableView.layer.cornerRadius = 4
         contentView.addSubview(tableView)
         
         fireTimer()
@@ -92,7 +95,7 @@ final class GamePopupView: UIView {
         }
         
         timer = Timer.scheduledTimer(withTimeInterval: 2.0 / Double(speed), repeats: true, block: { timer in
-            let section = self.turnsFinished <= self.game.turns.count / 2 ? 0 : 1
+            let section = self.turnsFinished < self.game.turns.count / 2 ? 0 : 1
             let row = self.turnsFinished % (self.game.turns.count / 2)
             
             let goals = OverviewModel.shared.goalsForTurn(turn: self.turnsFinished, inGame: self.game)
@@ -101,7 +104,6 @@ final class GamePopupView: UIView {
             // Add next turn to the tableview.
             self.turnsFinished += 1
             
-            // TODO: scrollToRow is quite buggy, also jumps to top for a split second when the second half/section starts. Needs a fix.
             self.tableView.reloadData()
             self.tableView.scrollToRow(at: IndexPath(row: row, section: section), at: .bottom, animated: true)
             
