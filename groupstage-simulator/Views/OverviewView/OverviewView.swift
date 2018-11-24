@@ -25,6 +25,7 @@ final class OverviewView: View {
         tableView.dataSource = self
         tableView.backgroundColor = .white
         tableView.separatorStyle = .none
+        tableView.allowsSelection = false
         addSubview(tableView)
     }
     
@@ -59,8 +60,13 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50))
+        let header = UIView(frame: CGRect(x: padding, y: 0, width: tableView.frame.size.width - (padding*2), height: 50))
+        
+        let view = UIView(frame: CGRect(x: padding, y: 0, width: tableView.frame.size.width - (padding*2), height: 50))
         view.backgroundColor = Colors.blue.UI
+        view.layer.cornerRadius = 4
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        header.addSubview(view)
         
         let game = model.games[section]
         
@@ -85,7 +91,15 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
         awayLabel.font = UIFont.boldSystemFont(ofSize: 18)
         view.addSubview(awayLabel)
         
-        return view
+        return header
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 50
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50))
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -124,8 +138,6 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
             }
         }
         
-        cell?.backgroundColor = game.isSimulated ? Colors.lightGray.UI : .white
-        
         if isNextMatch {
             cell?.scoreLabel.isHidden = true
             cell?.playButton.isHidden = false
@@ -159,7 +171,12 @@ private class GameCell: UITableViewCell {
     init() {
         super.init(style: .default, reuseIdentifier: GameCell.identifier)
         
-        backgroundColor = Colors.lightGray.UI
+        let background = UIView(frame: CGRect(x: padding, y: 0, width: frame.size.width - (padding*2), height: frame.size.height))
+        background.backgroundColor = Colors.lightGray.UI
+        background.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        background.layer.cornerRadius = 4
+        background.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        addSubview(background)
         
         scoreLabel.textColor = .black
         scoreLabel.textAlignment = .center

@@ -62,9 +62,13 @@ final class GamePopupView: UIView {
         speedButton.setTitle("1x", for: .normal)
         speedButton.setTitleColor(.white, for: .normal)
         speedButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
+        speedButton.backgroundColor = header.backgroundColor
         speedButton.layer.borderColor = UIColor.white.cgColor
         speedButton.layer.borderWidth = 2
         speedButton.layer.cornerRadius = 4
+        speedButton.layer.shadowRadius = 4
+        speedButton.layer.shadowOffset = CGSize(width: -1, height: -1)
+        speedButton.layer.shadowOpacity = 0.3
         speedButton.addTarget(self, action: #selector(speedButtonPressed), for: .touchUpInside)
         header.addSubview(speedButton)
         
@@ -97,6 +101,7 @@ final class GamePopupView: UIView {
             // Add next turn to the tableview.
             self.turnsFinished += 1
             
+            // TODO: scrollToRow is quite buggy, also jumps to top for a split second when the second half/section starts. Needs a fix.
             self.tableView.reloadData()
             self.tableView.scrollToRow(at: IndexPath(row: row, section: section), at: .bottom, animated: true)
             
