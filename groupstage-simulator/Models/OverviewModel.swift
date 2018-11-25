@@ -17,6 +17,8 @@ final class OverviewModel: NSObject {
     
     let numberOfTurns: Int = 40
     
+    // This is the completionHandler for simulating the games.
+    // Every view that needs to know when a game has been finished can listen to this event.
     let gameWasSimulatedEvent = Event<Int>()
     
     public func generateGames() {
@@ -37,20 +39,14 @@ final class OverviewModel: NSObject {
         // D vs B
         // B vs A
         // C vs D
-        // A vs D
         // B vs C
+        // A vs D
         games.append(Game(id: 0, isSimulated: false, homeTeam: teamsModel.teams[0], awayTeam: teamsModel.teams[2], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[0].players.last!))
         games.append(Game(id: 1, isSimulated: false, homeTeam: teamsModel.teams[3], awayTeam: teamsModel.teams[1], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[3].players.last!))
         games.append(Game(id: 2, isSimulated: false, homeTeam: teamsModel.teams[1], awayTeam: teamsModel.teams[0], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[1].players.last!))
         games.append(Game(id: 3, isSimulated: false, homeTeam: teamsModel.teams[2], awayTeam: teamsModel.teams[3], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[2].players.last!))
-        games.append(Game(id: 4, isSimulated: false, homeTeam: teamsModel.teams[0], awayTeam: teamsModel.teams[3], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[0].players.last!))
         games.append(Game(id: 5, isSimulated: false, homeTeam: teamsModel.teams[1], awayTeam: teamsModel.teams[2], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[1].players.last!))
-        
-        // All teams should play home/away atleast once against each contestant, so we reverse the previous
-        /* [TURNED OFF] - This is not part of the instructions because it is the group stage
-        for game in games {
-            games.append(reverseTeamsFor(game: game))
-        }*/
+        games.append(Game(id: 4, isSimulated: false, homeTeam: teamsModel.teams[0], awayTeam: teamsModel.teams[3], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[0].players.last!))
     }
     
     public func simulateGameWith(id: Int) {
@@ -97,10 +93,14 @@ final class OverviewModel: NSObject {
                 }
                 goal = true
                 
+                
+                // We should add the goal to the player that just scored (for statistics)
+                // First find out what team he's in.
                 let team = TeamsModel.shared.teams.enumerated().first { team in
                     return team.element.players.contains(game.ballHolder)
                 }
                 
+                // If we found a team, search for his index within his team and add the goal.
                 if let team = team {
                     for (index, player) in team.element.players.enumerated() {
                         if player == game.ballHolder {
@@ -112,15 +112,16 @@ final class OverviewModel: NSObject {
                 
                 print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) scored! The score now stands \(game.goalsHome)-\(game.goalsAway)")
             } else {
+                // OPTIONAL: We could add rebound chance right here.
                 print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) misses!")
             }
             
+            // Let the keeper start with the ball after a shot on goal (defenders if goal was made, see 4 lines ahead).
             var ballHolder = game.holdingTeam == .home ? game.awayTeam.players.last! : game.homeTeam.players.last!
             let holdingTeam: Teams = game.holdingTeam == .home ? .away : .home
+            let team = holdingTeam == .home ? game.homeTeam : game.awayTeam
             
-            // If goal was made, let the defenders start with the ball
-            if goal {
-                let team = holdingTeam == .home ? game.homeTeam : game.awayTeam
+            if goal { // If a goal was made, let the defenders start with the ball
                 let defenders = team.players.filter { player in
                     return player.position.1 == 1
                 }
@@ -130,7 +131,6 @@ final class OverviewModel: NSObject {
                 }
             }
             
-            // Either after scroring or missing, the ball should return to the others goalkeeper (might add chance for rebound?).
             game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: ballHolder, goal: goal))
             game.ballHolder = ballHolder
             game.holdingTeam = holdingTeam
@@ -262,11 +262,14 @@ final class OverviewModel: NSObject {
                 }
             }
             
-            if passSucceeded {
+            if passSucceeded { // If pass succeeds, toPlayer should now be ballHolder.
                 print("\(game.ballHolder.firstName) \(game.ballHolder.lastName) passed to \(chosenTeammate.firstName) \(chosenTeammate.lastName)!")
                 game.turns.append(Turn(fromPlayer: game.ballHolder, toPlayer: chosenTeammate, goal: false))
                 game.ballHolder = chosenTeammate
             } else {
+                // If pass was intercepted, let a random enemy in this 'row' get the ball.
+                // OPTIONAL: Calculate chance for each enemy based on grid difference (and maybe power?).
+                
                 let receivingEnemy = enemies.randomElement() ?? enemies[0]
                 
                 print("\(receivingEnemy.firstName) \(receivingEnemy.lastName) intercepts the pass!")
@@ -286,6 +289,7 @@ final class OverviewModel: NSObject {
             print("Game finished! Total score is \(game.goalsHome)-\(game.goalsAway)")
             gameWasSimulatedEvent.emit(id)
             
+            // Update the global TeamsModel with the games stats.
             for (index, team) in TeamsModel.shared.teams.enumerated() {
                 if team.name == game.homeTeam.name {
                     TeamsModel.shared.teams[index].goals += game.goalsHome
@@ -300,18 +304,6 @@ final class OverviewModel: NSObject {
                 }
             }
         }
-    }
-    
-    public func teamForPlayer(player: PlayerModel, inGame: Game) -> Teams {
-        var team: Teams = .home
-        
-        for awayPlayer in inGame.awayTeam.players {
-            if player == awayPlayer {
-                team = .away
-            }
-        }
-        
-        return team
     }
     
     public func goalsForTurn(turn: Int, inGame game: Game) -> (home: Int, away: Int) {

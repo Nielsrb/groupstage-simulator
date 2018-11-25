@@ -39,6 +39,8 @@ final class OverviewView: View {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // After playing a game, we want to reload the rows that were influenced.
+    // Center the row after updating it.
     public func reloadRowsWith(ids: [Int]) {
         let indexPaths = ids.compactMap { id -> IndexPath? in
             let indexPath = IndexPath(row: 0, section: id)
@@ -53,11 +55,12 @@ final class OverviewView: View {
     }
     
     private func calculateHeightForRowAt(indexPath: IndexPath) -> CGFloat {
-        
+        // When game hasn't been simulated yet, size should be 70 (for play button).
         guard model.games[indexPath.section].isSimulated else {
             return cellHeight
         }
         
+        // Get the amount of goals in this game, so we can expand the size of the row.
         let goalTurns = model.games[indexPath.section].turns.filter { turn in
             return turn.goal
         }
@@ -157,6 +160,8 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
             }
         }
         
+        // The cells need information about the goals that were made.
+        // First we need to know in what turns a goal was made, and the index to show what minute it was.
         var goals: [(playerName: String, team: Teams, time: Int)] = []
         let goalTurns: [(offset: Int, element: Turn)] = game.turns.enumerated().filter { turn in
             return turn.element.goal
