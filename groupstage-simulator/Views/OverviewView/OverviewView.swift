@@ -9,6 +9,10 @@
 import Foundation
 import UIKit
 
+protocol OverviewViewDelegate: class {
+    func playButtonPressed(id: Int)
+}
+
 final class OverviewView: View {
     
     let tableView = UITableView()
@@ -16,6 +20,8 @@ final class OverviewView: View {
     let padding: CGFloat = 10
     
     let model = OverviewModel.shared
+    
+    weak var delegate: OverviewViewDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -126,6 +132,7 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
         
         let game = model.games[indexPath.section]
         cell?.playButton.tag = indexPath.section
+        cell?.delegate = delegate
         
         var isNextMatch = false
         for (index, game) in model.games.enumerated() {
@@ -168,6 +175,8 @@ private class GameCell: UITableViewCell {
     let isNextMatch = false
     let padding: CGFloat = 10
     
+    weak var delegate: OverviewViewDelegate?
+    
     init() {
         super.init(style: .default, reuseIdentifier: GameCell.identifier)
         
@@ -202,7 +211,6 @@ private class GameCell: UITableViewCell {
     }
     
     @objc private func playButtonPressed() {
-        // TODO: - View should not talk directly with the models, Controller should be inbetween.
-        OverviewModel.shared.simulateGameWith(id: playButton.tag)
+        delegate?.playButtonPressed(id: playButton.tag)
     }
 }
