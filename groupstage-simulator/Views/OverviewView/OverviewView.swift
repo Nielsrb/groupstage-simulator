@@ -51,6 +51,17 @@ final class OverviewView: View {
         tableView.reloadRows(at: indexPaths, with: .automatic)
         tableView.scrollToRow(at: indexPaths[0], at: .middle, animated: true)
     }
+    
+    private func calculateHeightForRowAt(indexPath: IndexPath) -> CGFloat {
+        let goalTurns = model.games[indexPath.section].turns.filter { turn in
+            return turn.goal
+        }
+        
+        guard goalTurns.count > 0 else {
+            return cellHeight
+        }
+        return 50 + CGFloat(25 * goalTurns.count)
+    }
 }
 
 // MARK: -
@@ -58,7 +69,7 @@ final class OverviewView: View {
 extension OverviewView: UITableViewDelegate, UITableViewDataSource {
     // Delegate
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return cellHeight
+        return calculateHeightForRowAt(indexPath: indexPath)
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -145,17 +156,29 @@ extension OverviewView: UITableViewDelegate, UITableViewDataSource {
             }
         }
         
+        var goals: [(playerName: String, team: Teams, time: Int)] = []
+        let goalTurns: [(offset: Int, element: Turn)] = game.turns.enumerated().filter { turn in
+            return turn.element.goal
+        }
+        
+        for goal in goalTurns {
+            let name = "\(goal.element.fromPlayer.firstName.first!). \(goal.element.fromPlayer.lastName)"
+            let team: Teams = game.homeTeam.players.contains(goal.element.fromPlayer) ? .home : .away
+            let time: Int = Int(round((90.0 / Double(game.turns.count)) * Double(goal.offset)))
+            
+            goals.append((playerName: name, team: team, time: time))
+        }
+        
+        cell?.goals = goals
+        
         if isNextMatch {
             cell?.scoreLabel.isHidden = true
             cell?.playButton.isHidden = false
-            
-            //cell?.backgroundColor = .white
         } else {
             cell?.scoreLabel.isHidden = !game.isSimulated
             cell?.playButton.isHidden = true
             
             cell?.scoreLabel.text = "\(game.goalsHome) - \(game.goalsAway)"
-            //cell?.backgroundColor = Colors.lightGray.UI
         }
         
         return cell!
@@ -171,9 +194,11 @@ private class GameCell: UITableViewCell {
     
     let scoreLabel = UILabel()
     let playButton = UIButton()
+    private let goalsView = UIView()
     
-    let isNextMatch = false
     let padding: CGFloat = 10
+    
+    var goals: [(playerName: String, team: Teams, time: Int)] = []
     
     weak var delegate: OverviewViewDelegate?
     
@@ -197,6 +222,11 @@ private class GameCell: UITableViewCell {
         playButton.layer.cornerRadius = 4
         playButton.addTarget(self, action: #selector(playButtonPressed), for: .touchUpInside)
         addSubview(playButton)
+        
+        goalsView.frame = background.frame
+        goalsView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        goalsView.isUserInteractionEnabled = false
+        addSubview(goalsView)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -206,8 +236,30 @@ private class GameCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        scoreLabel.frame = CGRect(x: 10, y: 0, width: frame.size.width - 20, height: frame.size.height)
+        scoreLabel.frame = CGRect(x: 10, y: 0, width: frame.size.width - 20, height: 50)
         playButton.frame = CGRect(x: frame.size.width * 0.3, y: padding, width: frame.size.width * 0.4, height: frame.size.height - (padding*2))
+        
+        goalsView.subviews.forEach { $0.removeFromSuperview() }
+        
+        var yPos = scoreLabel.frame.size.height
+        for goal in goals {
+            let timeLabel = UILabel(frame: CGRect(x: (goalsView.frame.size.width - 50) / 2, y: yPos, width: 50, height: 25))
+            timeLabel.text = "\(goal.time)'"
+            timeLabel.textColor = .black
+            timeLabel.textAlignment = .center
+            timeLabel.font = UIFont.systemFont(ofSize: 14)
+            goalsView.addSubview(timeLabel)
+            
+            let xPos = goal.team == .home ? padding : timeLabel.frame.origin.x + timeLabel.frame.size.width
+            let playerLabel = UILabel(frame: CGRect(x: xPos, y: yPos, width: timeLabel.frame.origin.x - padding, height: 25))
+            playerLabel.text = goal.playerName
+            playerLabel.textColor = .black
+            playerLabel.textAlignment = goal.team == .home ? .left : .right
+            playerLabel.font = UIFont.systemFont(ofSize: 14)
+            goalsView.addSubview(playerLabel)
+            
+            yPos += timeLabel.frame.size.height
+        }
     }
     
     @objc private func playButtonPressed() {
