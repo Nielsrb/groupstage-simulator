@@ -27,11 +27,16 @@
 		4662019D21A3100A0041FE63 /* TeamsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019C21A3100A0041FE63 /* TeamsModel.swift */; };
 		466201A021A310B70041FE63 /* TeamsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4662019F21A310B70041FE63 /* TeamsView.swift */; };
 		46CDC1F121A61E8700ED383A /* PlayerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46CDC1F021A61E8700ED383A /* PlayerModel.swift */; };
+		46CF486C21AAD033009FAC11 /* PlayerPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46CF486B21AAD033009FAC11 /* PlayerPopupView.swift */; };
+		46CF486E21AAD058009FAC11 /* PlayerPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46CF486D21AAD058009FAC11 /* PlayerPopupViewController.swift */; };
+		46CF487021AAD3C8009FAC11 /* ic_player@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46CF486F21AAD3C8009FAC11 /* ic_player@3x.png */; };
+		46CF487221AB04ED009FAC11 /* Names.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46CF487121AB04ED009FAC11 /* Names.swift */; };
 		46DB009C21A6F56000E36F58 /* StatisticsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46DB009B21A6F56000E36F58 /* StatisticsViewController.swift */; };
 		46DB009F21A6F64400E36F58 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46DB009E21A6F64400E36F58 /* StatisticsView.swift */; };
 		46DB00A121A6F85500E36F58 /* ic_statistics@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46DB00A021A6F85500E36F58 /* ic_statistics@3x.png */; };
-		46DB00A321A758EE00E36F58 /* GamePopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46DB00A221A758EE00E36F58 /* GamePopupView.swift */; };
+		46DB00A321A758EE00E36F58 /* GamePopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46DB00A221A758EE00E36F58 /* GamePopupViewController.swift */; };
 		46DB00C321A9962B00E36F58 /* ic_close@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46DB00C221A9962B00E36F58 /* ic_close@3x.png */; };
+		46DB00C721A9D2CF00E36F58 /* GamePopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46DB00C621A9D2CF00E36F58 /* GamePopupView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,11 +62,16 @@
 		4662019C21A3100A0041FE63 /* TeamsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsModel.swift; sourceTree = "<group>"; };
 		4662019F21A310B70041FE63 /* TeamsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsView.swift; sourceTree = "<group>"; };
 		46CDC1F021A61E8700ED383A /* PlayerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerModel.swift; sourceTree = "<group>"; };
+		46CF486B21AAD033009FAC11 /* PlayerPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPopupView.swift; sourceTree = "<group>"; };
+		46CF486D21AAD058009FAC11 /* PlayerPopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPopupViewController.swift; sourceTree = "<group>"; };
+		46CF486F21AAD3C8009FAC11 /* ic_player@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_player@3x.png"; sourceTree = "<group>"; };
+		46CF487121AB04ED009FAC11 /* Names.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Names.swift; sourceTree = "<group>"; };
 		46DB009B21A6F56000E36F58 /* StatisticsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsViewController.swift; sourceTree = "<group>"; };
 		46DB009E21A6F64400E36F58 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		46DB00A021A6F85500E36F58 /* ic_statistics@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_statistics@3x.png"; sourceTree = "<group>"; };
-		46DB00A221A758EE00E36F58 /* GamePopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePopupView.swift; sourceTree = "<group>"; };
+		46DB00A221A758EE00E36F58 /* GamePopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePopupViewController.swift; sourceTree = "<group>"; };
 		46DB00C221A9962B00E36F58 /* ic_close@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_close@3x.png"; sourceTree = "<group>"; };
+		46DB00C621A9D2CF00E36F58 /* GamePopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePopupView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				139E670A21A5576800CC6E63 /* OverviewViewController.swift */,
+				46DB00A221A758EE00E36F58 /* GamePopupViewController.swift */,
 			);
 			path = OverviewController;
 			sourceTree = "<group>";
@@ -87,7 +98,7 @@
 			isa = PBXGroup;
 			children = (
 				13D0358821A5696D00F7D7DD /* OverviewView.swift */,
-				46DB00A221A758EE00E36F58 /* GamePopupView.swift */,
+				46DB00C621A9D2CF00E36F58 /* GamePopupView.swift */,
 			);
 			path = OverviewView;
 			sourceTree = "<group>";
@@ -112,6 +123,7 @@
 		460C00CB21A4696F0001511D /* images */ = {
 			isa = PBXGroup;
 			children = (
+				46CF486F21AAD3C8009FAC11 /* ic_player@3x.png */,
 				46DB00C221A9962B00E36F58 /* ic_close@3x.png */,
 				13D0358D21A5735B00F7D7DD /* ic_overview@3x.png */,
 				46DB00A021A6F85500E36F58 /* ic_statistics@3x.png */,
@@ -162,6 +174,7 @@
 				13D0358521A55B5B00F7D7DD /* OverviewModel.swift */,
 				46CDC1F021A61E8700ED383A /* PlayerModel.swift */,
 				4662019C21A3100A0041FE63 /* TeamsModel.swift */,
+				46CF487121AB04ED009FAC11 /* Names.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -192,6 +205,7 @@
 			isa = PBXGroup;
 			children = (
 				4662019A21A30ECA0041FE63 /* TeamsViewController.swift */,
+				46CF486D21AAD058009FAC11 /* PlayerPopupViewController.swift */,
 			);
 			path = TeamsController;
 			sourceTree = "<group>";
@@ -200,6 +214,7 @@
 			isa = PBXGroup;
 			children = (
 				4662019F21A310B70041FE63 /* TeamsView.swift */,
+				46CF486B21AAD033009FAC11 /* PlayerPopupView.swift */,
 			);
 			path = TeamsView;
 			sourceTree = "<group>";
@@ -284,6 +299,7 @@
 				460C00CD21A4697B0001511D /* ic_team@3x.png in Resources */,
 				4662018821A303300041FE63 /* Assets.xcassets in Resources */,
 				4662018621A3032F0041FE63 /* Main.storyboard in Resources */,
+				46CF487021AAD3C8009FAC11 /* ic_player@3x.png in Resources */,
 				46DB00C321A9962B00E36F58 /* ic_close@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -302,13 +318,17 @@
 				4662019D21A3100A0041FE63 /* TeamsModel.swift in Sources */,
 				13D0358621A55B5B00F7D7DD /* OverviewModel.swift in Sources */,
 				13D0359021A5921300F7D7DD /* Events.swift in Sources */,
+				46CF486E21AAD058009FAC11 /* PlayerPopupViewController.swift in Sources */,
 				13D0358C21A56E8D00F7D7DD /* Color.swift in Sources */,
+				46CF486C21AAD033009FAC11 /* PlayerPopupView.swift in Sources */,
 				4662019821A30E6B0041FE63 /* Controller.swift in Sources */,
 				4662019B21A30ECA0041FE63 /* TeamsViewController.swift in Sources */,
 				466201A021A310B70041FE63 /* TeamsView.swift in Sources */,
 				13D0358921A5696D00F7D7DD /* OverviewView.swift in Sources */,
 				4662019621A30D590041FE63 /* View.swift in Sources */,
-				46DB00A321A758EE00E36F58 /* GamePopupView.swift in Sources */,
+				46DB00A321A758EE00E36F58 /* GamePopupViewController.swift in Sources */,
+				46CF487221AB04ED009FAC11 /* Names.swift in Sources */,
+				46DB00C721A9D2CF00E36F58 /* GamePopupView.swift in Sources */,
 				46DB009F21A6F64400E36F58 /* StatisticsView.swift in Sources */,
 				139E670B21A5576800CC6E63 /* OverviewViewController.swift in Sources */,
 				460C00C921A468670001511D /* Constants.swift in Sources */,

@@ -2,14 +2,19 @@
 //  GamePopupView.swift
 //  groupstage-simulator
 //
-//  Created by Niels Beeuwkes on 22/11/2018.
+//  Created by Niels Beeuwkes on 24/11/2018.
 //  Copyright © 2018 Niels Beeuwkes. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-final class GamePopupView: UIView {
+protocol GamePopupViewDelegate: class {
+    func closeButtonPressed()
+}
+
+final class GamePopupView: View {
+    
     private let contentView = UIView()
     private let tableView = UITableView()
     
@@ -24,12 +29,11 @@ final class GamePopupView: UIView {
     private let speedButton = UIButton()
     private var speed: Int = 1
     
-    init(frame: CGRect, game: Game, hasFinished: Bool = false) {
+    weak var delegate: GamePopupViewDelegate?
+    
+    init(frame: CGRect, game: Game) {
         self.game = game
         super.init(frame: frame)
-        
-        self.alpha = 0
-        self.backgroundColor = Color(0, alpha: 0.6).UI
         
         contentView.frame = CGRect(x: padding, y: frame.size.height * 0.2, width: frame.size.width - (padding*2), height: frame.size.height * 0.6)
         contentView.backgroundColor = .white
@@ -107,11 +111,6 @@ final class GamePopupView: UIView {
             self.tableView.reloadData()
             self.tableView.scrollToRow(at: IndexPath(row: row, section: section), at: .bottom, animated: true)
             
-            //            self.tableView.beginUpdates()
-            //            self.tableView.insertRows(at: [IndexPath(row: row, section: section)], with: .bottom)
-            //            self.tableView.endUpdates()
-            
-            
             // If game is at half time, stop timer.
             if self.turnsFinished == self.game.turns.count {
                 timer.invalidate()
@@ -120,19 +119,9 @@ final class GamePopupView: UIView {
         })
     }
     
-    public func togglePopup(open: Bool) {
-        UIView.animate(withDuration: 0.4, animations: {
-            self.alpha = open ? 1 : 0
-        }, completion: { _ in
-            if !open {
-                self.removeFromSuperview()
-            }
-        })
-    }
-    
     // MARK: - Targets
     @objc private func closeButtonPressed() {
-        togglePopup(open: false)
+        delegate?.closeButtonPressed()
     }
     
     @objc private func speedButtonPressed() {
@@ -182,12 +171,6 @@ extension GamePopupView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        /*guard section == 1 && max(turnsFinished - (section * (game.turns.count / 2)), 0) != 0 else {
-            return nil
-        }*/
-        
-        // scrollToRow seems buggy when using section headers.
-        // TODO: Try to find a way to allow section headers without being buggy.
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 30))
         view.backgroundColor = .white
         
@@ -214,6 +197,33 @@ extension GamePopupView: UITableViewDelegate, UITableViewDataSource {
         return section == 0 || max(turnsFinished - (section * (game.turns.count / 2)), 0) != 0 ? 30 : 0
     }
     
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 30))
+        view.backgroundColor = .white
+        
+        let label = UILabel(frame: view.bounds)
+        label.text = "MATCH END"
+        label.textColor = Colors.lightGray.UI
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.sizeToFit()
+        label.frame = CGRect(x: (view.frame.size.width - label.frame.size.width) / 2, y: 0, width: label.frame.size.width, height: view.frame.size.height)
+        view.addSubview(label)
+        
+        let leftLine = UIView(frame: CGRect(x: padding, y: (view.frame.size.height - 1) / 2, width: (view.frame.size.width / 2) - padding - (label.frame.size.width / 2) - 5, height: 1))
+        leftLine.backgroundColor = Colors.lightGray.UI
+        view.addSubview(leftLine)
+        
+        let rightLine = UIView(frame: CGRect(x: label.frame.origin.x + label.frame.size.width + 5, y: (view.frame.size.height - 1) / 2, width: (view.frame.size.width / 2) - padding - (label.frame.size.width / 2) - 5, height: 1))
+        rightLine.backgroundColor = Colors.lightGray.UI
+        view.addSubview(rightLine)
+        
+        return view
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return section == 1 && turnsFinished == game.turns.count ? 30 : 0
+    }
+    
     // Delegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
@@ -232,7 +242,6 @@ fileprivate final class GameTurnCell: UITableViewCell {
     private let turnLabel = UILabel()
     private let turnImageView = UIImageView()
     private let timeLabel = UILabel()
-    //private let line = UIView()
     
     var fromTeam: Teams = .home
     var toTeam: Teams = .away
@@ -256,9 +265,6 @@ fileprivate final class GameTurnCell: UITableViewCell {
         timeLabel.backgroundColor = Colors.blue.UI
         timeLabel.clipsToBounds = true
         addSubview(timeLabel)
-        
-        //line.backgroundColor = Colors.lightGray.UI
-        //addSubview(line)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -292,11 +298,5 @@ fileprivate final class GameTurnCell: UITableViewCell {
         let labelWidth = (frame.size.width / 2) - (frame.size.height * 0.5) - padding
         turnLabel.frame = CGRect(x: textSide == .home ? padding : padding + labelWidth + frame.size.height, y: 0, width: labelWidth, height: frame.size.height)
         turnLabel.textAlignment = textSide == .home ? .left : .right
-        
-        /*if gameMinute != 44 {
-            line.frame = CGRect(x: 10, y: frame.size.height - 1, width: frame.size.width - 20, height: 1)
-        } else {
-            line.frame = CGRect.zero
-        }*/
     }
 }

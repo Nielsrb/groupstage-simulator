@@ -126,7 +126,7 @@ final class StatisticsView: View {
         yPos += totalGoalsStat.frame.size.height + padding
         
         
-        // STATE: Average amount of goals per match
+        // STAT: Average amount of goals per match
         let finishedGames = OverviewModel.shared.games.filter { game in
             return game.isSimulated
         }

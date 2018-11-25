@@ -24,6 +24,10 @@ final class TeamsViewController: UIViewController, Controller {
         
         // Generate 4 new teams, can only be done once.
         model.generateTeams()
+        
+        if let view = view as? TeamsView {
+            view.delegate = self
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -36,5 +40,12 @@ final class TeamsViewController: UIViewController, Controller {
     
     override func viewWillAppear(_ animated: Bool) {
         tabBarController?.title = "Teams"
+    }
+}
+
+extension TeamsViewController: TeamsViewDelegate {
+    func playerPressed(player: PlayerModel) {
+        let vc = PlayerPopupViewController(view: PlayerPopupView(frame: view.frame, player: player))
+        present(vc, animated: true)
     }
 }

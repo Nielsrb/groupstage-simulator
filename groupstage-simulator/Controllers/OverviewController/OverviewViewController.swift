@@ -20,16 +20,19 @@ final class OverviewViewController: UIViewController, Controller {
         
         OverviewModel.shared.generateGames()
         
+        if let view = view as? OverviewView {
+            view.delegate = self
+        }
+        
+        // Listen to the model. If a game was finished simulating, refresh OverviewView tableview and present GamePopupController.
         OverviewModel.shared.gameWasSimulatedEvent.bind(self) { id in
             if let view = self.controllerView as? OverviewView {
                 view.reloadRowsWith(ids: [id, id+1])
             }
             
             if let game = OverviewModel.shared.games.first(where: { return $0.id == id }) {
-                let gamePopup = GamePopupView(frame: view.bounds, game: game)
-                self.controllerView.addSubview(gamePopup)
-            
-                gamePopup.togglePopup(open: true)
+                let gamePopup = GamePopupViewController(view: GamePopupView(frame: view.frame, game: game))
+                self.present(gamePopup, animated: true)
             }
         }
     }
@@ -44,5 +47,11 @@ final class OverviewViewController: UIViewController, Controller {
     
     override func viewWillAppear(_ animated: Bool) {
         tabBarController?.title = "Overview"
+    }
+}
+
+extension OverviewViewController: OverviewViewDelegate {
+    func playButtonPressed(id: Int) {
+        OverviewModel.shared.simulateGameWith(id: id)
     }
 }
