@@ -9,8 +9,6 @@
 import Foundation
 import UIKit
 
-private let playerFirstNames = ["Robert", "Bill", "Evan", "Richard", "Pepper", "Mauro", "Lucas", "Niels", "Jan", "Rob", "Edwin", "John", "Alex"]
-private let playerLastNames = ["Wood", "Shizuke", "Mulder", "Ndidi", "Lee", "San Giorgi", "van der Sloot", "de Groot", "Kluivert", "Santon", "Florence"]
 private var playerNames: [String] = []
 
 struct PlayerModel: Equatable {
@@ -98,8 +96,8 @@ struct PlayerModel: Equatable {
     }
     
     private func generatePlayerName() -> (firstName: String, lastName: String) {
-        let firstName = playerFirstNames[Int.random(in: 0 ..< playerFirstNames.count)]
-        let lastName = playerLastNames[Int.random(in: 0 ..< playerLastNames.count)]
+        let firstName = names.firstNames.randomElement()!
+        let lastName = names.lastNames.randomElement()!
         let fullName = "\(firstName) \(lastName)"
         
         // Making sure 2 players can NEVER have the same name

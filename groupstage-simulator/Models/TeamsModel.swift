@@ -13,9 +13,6 @@ final class TeamsModel: NSObject {
     
     static let shared = TeamsModel()
     
-    private let teamFirstNames = ["Real", "SC", "FC", "Atletico", "Youth"]
-    private let teamLastNames = ["Cambuur", "Madrid", "Hotspur", "Zoetermeer", "Barcelona", "London", "Amsterdam", "Kaapstad", "Rotterdam", "Groningen", "Lelystad"]
-    
     var teams: [TeamModel] = []
     
     // Public funtion to generate 4 random teams, can only be called once
@@ -31,8 +28,8 @@ final class TeamsModel: NSObject {
     
     // Generate a new team with random players
     private func generateTeamModel() -> TeamModel {
-        let firstName = teamFirstNames[Int.random(in: 0 ..< teamFirstNames.count)]
-        let lastName = teamLastNames[Int.random(in: 0 ..< teamLastNames.count)]
+        let firstName = names.teamFirstNames.randomElement()!
+        let lastName = names.teamLastNames.randomElement()!
         let teamName = "\(firstName) \(lastName)"
         
         // Making sure teams can ever have the same name.
