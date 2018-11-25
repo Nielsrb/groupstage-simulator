@@ -52,6 +52,7 @@ final class PlayerPopupView: View {
         profilePic.image = UIImage.coloredImage(named: "ic_player", color: Color(0))
         profilePic.contentMode = .scaleAspectFit
         profilePic.layer.borderWidth = 1
+        profilePic.layer.cornerRadius = 4
         profilePic.layer.borderColor = UIColor.black.cgColor
         contentView.addSubview(profilePic)
         

@@ -97,18 +97,16 @@ final class OverviewModel: NSObject {
                 }
                 goal = true
                 
-                var teamIndex: Int = 0
-                for (index, team) in TeamsModel.shared.teams.enumerated() {
-                    if team == (game.holdingTeam == .home ? game.homeTeam : game.awayTeam) {
-                        teamIndex = index
-                        break
-                    }
+                let team = TeamsModel.shared.teams.enumerated().first { team in
+                    return team.element.players.contains(game.ballHolder)
                 }
                 
-                for (index, player) in TeamsModel.shared.teams[teamIndex].players.enumerated() {
-                    if player == game.ballHolder {
-                        TeamsModel.shared.teams[teamIndex].players[index].goals += 1
-                        break
+                if let team = team {
+                    for (index, player) in team.element.players.enumerated() {
+                        if player == game.ballHolder {
+                            TeamsModel.shared.teams[team.offset].players[index].goals += 1
+                            break
+                        }
                     }
                 }
                 

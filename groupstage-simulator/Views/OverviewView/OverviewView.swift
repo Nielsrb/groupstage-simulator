@@ -53,12 +53,13 @@ final class OverviewView: View {
     }
     
     private func calculateHeightForRowAt(indexPath: IndexPath) -> CGFloat {
-        let goalTurns = model.games[indexPath.section].turns.filter { turn in
-            return turn.goal
+        
+        guard model.games[indexPath.section].isSimulated else {
+            return cellHeight
         }
         
-        guard goalTurns.count > 0 else {
-            return cellHeight
+        let goalTurns = model.games[indexPath.section].turns.filter { turn in
+            return turn.goal
         }
         return 50 + CGFloat(25 * goalTurns.count)
     }
