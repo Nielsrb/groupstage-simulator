@@ -171,7 +171,6 @@ extension GamePopupView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        // scrollToRow seems buggy when using section headers.
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 30))
         view.backgroundColor = .white
         
@@ -196,6 +195,33 @@ extension GamePopupView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return section == 0 || max(turnsFinished - (section * (game.turns.count / 2)), 0) != 0 ? 30 : 0
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 30))
+        view.backgroundColor = .white
+        
+        let label = UILabel(frame: view.bounds)
+        label.text = "MATCH END"
+        label.textColor = Colors.lightGray.UI
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.sizeToFit()
+        label.frame = CGRect(x: (view.frame.size.width - label.frame.size.width) / 2, y: 0, width: label.frame.size.width, height: view.frame.size.height)
+        view.addSubview(label)
+        
+        let leftLine = UIView(frame: CGRect(x: padding, y: (view.frame.size.height - 1) / 2, width: (view.frame.size.width / 2) - padding - (label.frame.size.width / 2) - 5, height: 1))
+        leftLine.backgroundColor = Colors.lightGray.UI
+        view.addSubview(leftLine)
+        
+        let rightLine = UIView(frame: CGRect(x: label.frame.origin.x + label.frame.size.width + 5, y: (view.frame.size.height - 1) / 2, width: (view.frame.size.width / 2) - padding - (label.frame.size.width / 2) - 5, height: 1))
+        rightLine.backgroundColor = Colors.lightGray.UI
+        view.addSubview(rightLine)
+        
+        return view
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return section == 1 && turnsFinished == game.turns.count ? 30 : 0
     }
     
     // Delegate
