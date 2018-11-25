@@ -9,12 +9,18 @@
 import Foundation
 import UIKit
 
+protocol TeamsViewDelegate: class {
+    func playerPressed(player: PlayerModel)
+}
+
 final class TeamsView: View {
     
     let tableView = UITableView()
     let cellHeight: CGFloat = 50
     
     let model = TeamsModel.shared
+    
+    weak var delegate: TeamsViewDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -83,6 +89,9 @@ extension TeamsView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        let player = model.teams[indexPath.section].players[indexPath.row]
+        delegate?.playerPressed(player: player)
     }
     
     // Datasource

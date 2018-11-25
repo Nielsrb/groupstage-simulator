@@ -122,7 +122,6 @@ final class GamePopupView: View {
     // MARK: - Targets
     @objc private func closeButtonPressed() {
         delegate?.closeButtonPressed()
-        //self.dismiss(animated: true, completion: nil)
     }
     
     @objc private func speedButtonPressed() {
