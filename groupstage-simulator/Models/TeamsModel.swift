@@ -21,7 +21,7 @@ final class TeamsModel: NSObject {
             return
         }
         
-        for _ in 0..<4 {
+        for _ in 0 ..< 4 {
             teams.append(generateTeamModel())
         }
     }

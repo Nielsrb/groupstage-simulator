@@ -45,8 +45,8 @@ final class OverviewModel: NSObject {
         games.append(Game(id: 1, isSimulated: false, homeTeam: teamsModel.teams[3], awayTeam: teamsModel.teams[1], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[3].players.last!))
         games.append(Game(id: 2, isSimulated: false, homeTeam: teamsModel.teams[1], awayTeam: teamsModel.teams[0], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[1].players.last!))
         games.append(Game(id: 3, isSimulated: false, homeTeam: teamsModel.teams[2], awayTeam: teamsModel.teams[3], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[2].players.last!))
-        games.append(Game(id: 5, isSimulated: false, homeTeam: teamsModel.teams[1], awayTeam: teamsModel.teams[2], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[1].players.last!))
-        games.append(Game(id: 4, isSimulated: false, homeTeam: teamsModel.teams[0], awayTeam: teamsModel.teams[3], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[0].players.last!))
+        games.append(Game(id: 4, isSimulated: false, homeTeam: teamsModel.teams[1], awayTeam: teamsModel.teams[2], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[1].players.last!))
+        games.append(Game(id: 5, isSimulated: false, homeTeam: teamsModel.teams[0], awayTeam: teamsModel.teams[3], goalsHome: 0, goalsAway: 0, turns: [], holdingTeam: .home, ballHolder: teamsModel.teams[0].players.last!))
     }
     
     public func simulateGameWith(id: Int) {
